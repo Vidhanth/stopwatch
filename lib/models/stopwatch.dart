@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stopwatch/services/constants.dart';
 
 class StopWatch with ChangeNotifier {
   int milliseconds = 00;
@@ -8,6 +10,7 @@ class StopWatch with ChangeNotifier {
   int hours = 00;
   bool _wasReset = true;
   Timer _timer;
+  SharedPreferences _prefs;
 
   bool get wasReset => _wasReset;
 
@@ -19,16 +22,19 @@ class StopWatch with ChangeNotifier {
   }
 
 
-  void start() {
+  void start() async {
+    if (_prefs == null)
+      _prefs = await SharedPreferences.getInstance();
+
     _wasReset = false;
     Timer.periodic(
       Duration(milliseconds: 10),
-      (Timer timer) {
+          (Timer timer) {
         _timer = timer;
-        if(milliseconds == 99){
+        if (milliseconds == 99) {
           milliseconds = 0;
           incrementSeconds();
-        }else
+        } else
           milliseconds++;
         notifyListeners();
       },
@@ -42,6 +48,7 @@ class StopWatch with ChangeNotifier {
     } else {
       seconds++;
     }
+    runActions();
   }
 
   void incrementMinutes() {
@@ -68,5 +75,28 @@ class StopWatch with ChangeNotifier {
     minutes = 0;
     hours = 0;
     notifyListeners();
+  }
+
+  void runActions() {
+
+    print("running actions $seconds");
+
+    if (_prefs.getBool(intervalActionsKey)) {
+      if (_prefs.getBool(playSoundKey)) {
+        //TODO Play interval sound
+      }
+      if (_prefs.getBool(autoLapKey)) {
+        //TODO autoLap
+      }
+    }
+
+    if (_prefs.getBool(specificActionsKey)) {
+      if (_prefs.getBool(specificPlaySoundKey)) {
+        //TODO Play specific time sound
+      }
+      if (_prefs.getBool(stopClockKey)) {
+        stop();
+      }
+    }
   }
 }

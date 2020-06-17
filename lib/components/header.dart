@@ -1,14 +1,26 @@
 import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stopwatch/components/laps_list.dart';
 import 'package:stopwatch/models/show_settings.dart';
 import 'package:stopwatch/services/constants.dart';
 import 'package:stopwatch/services/custom_buttons.dart';
 import 'package:stopwatch/services/poppins_text.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
+
+SharedPreferences _prefs;
+List<String> intervalTime = ["00", "00", "00"];
+List<String> specificTime = ["00", "00", "00"];
+TextEditingController _intControllerHour;
+TextEditingController _intControllerMin;
+TextEditingController _intControllerSec;
+TextEditingController _speControllerHour;
+TextEditingController _speControllerMin;
+TextEditingController _speControllerSec;
 
 class Header extends StatelessWidget {
   @override
@@ -66,8 +78,28 @@ class Header extends StatelessWidget {
 
 void toggleSettings(BuildContext context) {
   ShowSettings settings = Provider.of<ShowSettings>(context, listen: false);
+  if (settings.showSettings) {
+    saveIntervalTime(intervalTime);
+    saveSpecificTime(specificTime);
+  }
   settings.showSettings = !settings.showSettings;
   if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
+}
+
+saveIntervalTime(List<String> newTime) async {
+  _intControllerHour.text = intervalTime[0];
+  _intControllerMin.text = intervalTime[1];
+  _intControllerSec.text = intervalTime[2];
+  print(intervalTime);
+  await _prefs.setStringList(intervalTimeKey, newTime);
+}
+
+saveSpecificTime(List<String> newTime) async {
+  _speControllerHour.text = specificTime[0];
+  _speControllerMin.text = specificTime[1];
+  _speControllerSec.text = specificTime[2];
+  print(specificTime);
+  await _prefs.setStringList(specificTimeKey, newTime);
 }
 
 class Settings extends StatefulWidget {
@@ -81,17 +113,20 @@ class _SettingsState extends State<Settings> {
   bool autoLap = false;
   bool specificActions = false;
   bool specificPlaySound = false;
-  bool specificStopClock= false;
+  bool specificStopClock = false;
   bool specificAutoLap = false;
   bool specificSoundSettings = false;
   bool soundSettings = false;
+  int intervalTone = 0;
+  int specificTone = 0;
   Color activeTextColor = Colors.black.withOpacity(0.75);
   Color inactiveTextColor = Colors.black.withOpacity(0.45);
 
-  togglePlaySound() {
+  togglePlaySound() async {
     setState(() {
       playSound = !playSound;
     });
+    await _prefs.setBool(playSoundKey, playSound);
   }
 
   toggleSoundSettings() {
@@ -100,41 +135,90 @@ class _SettingsState extends State<Settings> {
     });
   }
 
-  toggleIntervalActions() {
+  toggleIntervalActions() async {
     if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
     setState(() {
       intervalActions = !intervalActions;
     });
+    await _prefs.setBool(intervalActionsKey, intervalActions);
   }
 
-  toggleAutoLap() {
+  toggleAutoLap() async {
     setState(() {
       autoLap = !autoLap;
     });
+    await _prefs.setBool(autoLapKey, autoLap);
   }
 
-  toggleSpecificActions(){
+  toggleSpecificActions() async {
+    if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
     setState(() {
       specificActions = !specificActions;
     });
+    await _prefs.setBool(specificActionsKey, specificActions);
   }
 
-  toggleSpecificPlaySound(){
+  toggleSpecificPlaySound() async {
     setState(() {
       specificPlaySound = !specificPlaySound;
     });
+    await _prefs.setBool(specificPlaySoundKey, specificPlaySound);
   }
 
-  toggleSpecificStopClock(){
+  toggleSpecificStopClock() async {
     setState(() {
       specificStopClock = !specificStopClock;
     });
+    await _prefs.setBool(stopClockKey, specificStopClock);
   }
 
   toggleSpecificSoundSettings() {
     setState(() {
       specificSoundSettings = !specificSoundSettings;
     });
+  }
+
+  setIntervalTone(int tone) async {
+    setState(() {
+      intervalTone = tone;
+    });
+    await _prefs.setInt(intervalToneKey, intervalTone);
+  }
+
+  setSpecificTone(int tone) async {
+    setState(() {
+      specificTone = tone;
+    });
+    await _prefs.setInt(intervalToneKey, specificTone);
+  }
+
+  @override
+  void initState() {
+    Future.delayed(duration200, (){
+      initializePrefs();
+    });
+    super.initState();
+  }
+
+  void initializePrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+    intervalActions = _prefs.getBool(intervalActionsKey);
+    specificActions = _prefs.getBool(specificActionsKey);
+    specificTime = _prefs.getStringList(specificTimeKey);
+    intervalTime = _prefs.getStringList(intervalTimeKey);
+    print(intervalTime);
+    intervalTone = _prefs.getInt(intervalToneKey);
+    specificTone = _prefs.getInt(specificToneKey);
+    playSound = _prefs.getBool(playSoundKey);
+    specificPlaySound = _prefs.getBool(specificPlaySoundKey);
+    autoLap = _prefs.getBool(autoLapKey);
+    specificStopClock = _prefs.getBool(stopClockKey);
+    _intControllerHour = TextEditingController(text: intervalTime[0]);
+    _intControllerMin = TextEditingController(text: intervalTime[1]);
+    _intControllerSec = TextEditingController(text: intervalTime[2]);
+    _speControllerHour = TextEditingController(text: specificTime[0]);
+    _speControllerMin = TextEditingController(text: specificTime[1]);
+    _speControllerSec = TextEditingController(text: specificTime[2]);
   }
 
   @override
@@ -220,6 +304,7 @@ class _SettingsState extends State<Settings> {
               opacity: intervalActions ? 1.0 : 0.5,
               duration: duration500,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   FittedBox(
                     child: Row(
@@ -230,12 +315,19 @@ class _SettingsState extends State<Settings> {
                             Container(
                               height: 70,
                               width: 80,
-                              child: TextField(
+                              child: TextFormField(
+                                controller: _intControllerHour,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
                                   CustomRangeTextInputFormatter(),
                                   WhitelistingTextInputFormatter.digitsOnly,
                                 ],
+                                onFieldSubmitted: (String hour) {
+                                  saveIntervalTime(intervalTime);
+                                },
+                                onChanged: (String hour) {
+                                  intervalTime[0] = getFormattedText(hour);
+                                },
                                 cursorColor: inactiveTextColor,
                                 maxLength: 2,
                                 scrollPhysics: BouncingScrollPhysics(),
@@ -267,13 +359,20 @@ class _SettingsState extends State<Settings> {
                             Container(
                               height: 70,
                               width: 80,
-                              child: TextField(
+                              child: TextFormField(
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
                                   CustomRangeTextInputFormatter(),
                                   WhitelistingTextInputFormatter.digitsOnly,
                                 ],
+                                controller: _intControllerMin,
                                 cursorColor: inactiveTextColor,
+                                onFieldSubmitted: (String min) {
+                                  saveIntervalTime(intervalTime);
+                                },
+                                onChanged: (String min) {
+                                  intervalTime[1] = getFormattedText(min);
+                                },
                                 maxLength: 2,
                                 scrollPhysics: BouncingScrollPhysics(),
                                 cursorRadius: Radius.circular(10),
@@ -304,7 +403,7 @@ class _SettingsState extends State<Settings> {
                             Container(
                               height: 70,
                               width: 80,
-                              child: TextField(
+                              child: TextFormField(
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
                                   CustomRangeTextInputFormatter(),
@@ -314,6 +413,13 @@ class _SettingsState extends State<Settings> {
                                 maxLength: 2,
                                 scrollPhysics: BouncingScrollPhysics(),
                                 cursorRadius: Radius.circular(10),
+                                controller: _intControllerSec,
+                                onFieldSubmitted: (String sec) {
+                                  saveIntervalTime(intervalTime);
+                                },
+                                onChanged: (String sec) {
+                                  intervalTime[2] = getFormattedText(sec);
+                                },
                                 decoration: InputDecoration(
                                     hintText: "00",
                                     counterText: "",
@@ -402,21 +508,57 @@ class _SettingsState extends State<Settings> {
                       ],
                     ),
                   ),
-                  AnimatedContainer(
-                    height: soundSettings ? 60 : 0,
-                    width: w,
-                    duration: duration500,
+                  SizedBox(
+                    height: 15,
+                  ),
+                  AnimatedOpacity(
+                    opacity: soundSettings ? 1.0 : 0.0,
+                    duration: duration600,
                     curve: fastOutSlowIn,
-                    margin: EdgeInsets.only(
-                      top: 15,
-                    ),
-                    decoration: BoxDecoration(
+                    child: ClipRRect(
                       borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                          topRight: Radius.circular(5)),
-                      color: Colors.black38,
+                          topLeft: Radius.circular(30),
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                          topRight: Radius.circular(1)),
+                      child: AnimatedContainer(
+                        height: soundSettings ? 60 : 0,
+                        width: soundSettings ? w : 0,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(1),
+                        duration: duration700,
+                        curve: Curves.ease,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              bottomLeft: Radius.circular(30),
+                              bottomRight: Radius.circular(30),
+                              topRight: Radius.circular(0)),
+                          color: Colors.black38,
+                        ),
+                        child: AnimatedOpacity(
+                          opacity: soundSettings ? 1.0 : 0.0,
+                          duration: duration200,
+                          curve: fastOutSlowIn,
+                          child: SingleChildScrollView(
+                            physics: BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                  7,
+                                  (index) => Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 13.0,
+                                            right: index == 6 ? 13 : 0),
+                                        child: _toggleContainer(
+                                            "Tone ${index + 1}", () {
+                                          setIntervalTone(index);
+                                        }, intervalTone == index),
+                                      )),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   )
                 ],
@@ -440,7 +582,7 @@ class _SettingsState extends State<Settings> {
                   style: poppinsMedium.copyWith(
                     fontSize: 120,
                     color:
-                    specificActions ? activeTextColor : inactiveTextColor,
+                        specificActions ? activeTextColor : inactiveTextColor,
                   ),
                   duration: duration500,
                 ),
@@ -460,6 +602,7 @@ class _SettingsState extends State<Settings> {
               opacity: specificActions ? 1.0 : 0.5,
               duration: duration500,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   FittedBox(
                     child: Row(
@@ -470,12 +613,19 @@ class _SettingsState extends State<Settings> {
                             Container(
                               height: 70,
                               width: 80,
-                              child: TextField(
+                              child: TextFormField(
                                 keyboardType: TextInputType.number,
+                                controller: _speControllerHour,
                                 inputFormatters: [
                                   WhitelistingTextInputFormatter.digitsOnly,
                                   CustomRangeTextInputFormatter(),
                                 ],
+                                onFieldSubmitted: (String hour) {
+                                  saveSpecificTime(specificTime);
+                                },
+                                onChanged: (String hour) {
+                                  specificTime[0] = getFormattedText(hour);
+                                },
                                 cursorColor: inactiveTextColor,
                                 maxLength: 2,
                                 scrollPhysics: BouncingScrollPhysics(),
@@ -507,8 +657,15 @@ class _SettingsState extends State<Settings> {
                             Container(
                               height: 70,
                               width: 80,
-                              child: TextField(
+                              child: TextFormField(
                                 keyboardType: TextInputType.number,
+                                controller: _speControllerMin,
+                                onFieldSubmitted: (String min) {
+                                  saveSpecificTime(specificTime);
+                                },
+                                onChanged: (String min) {
+                                  specificTime[1] = getFormattedText(min);
+                                },
                                 inputFormatters: [
                                   CustomRangeTextInputFormatter(),
                                   WhitelistingTextInputFormatter.digitsOnly,
@@ -544,8 +701,15 @@ class _SettingsState extends State<Settings> {
                             Container(
                               height: 70,
                               width: 80,
-                              child: TextField(
+                              child: TextFormField(
                                 keyboardType: TextInputType.number,
+                                controller: _speControllerSec,
+                                onFieldSubmitted: (String sec) {
+                                  saveSpecificTime(specificTime);
+                                },
+                                onChanged: (String sec) {
+                                  specificTime[2] = getFormattedText(sec);
+                                },
                                 inputFormatters: [
                                   CustomRangeTextInputFormatter(),
                                   WhitelistingTextInputFormatter.digitsOnly,
@@ -585,13 +749,13 @@ class _SettingsState extends State<Settings> {
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            _toggleContainer(
-                                "Stop timer", toggleSpecificStopClock, specificStopClock),
+                            _toggleContainer("Stop timer",
+                                toggleSpecificStopClock, specificStopClock),
                             SizedBox(
                               width: 10,
                             ),
-                            _toggleContainer(
-                                "Play sound", toggleSpecificPlaySound, specificPlaySound),
+                            _toggleContainer("Play sound",
+                                toggleSpecificPlaySound, specificPlaySound),
                           ],
                         ),
                         SizedBox(
@@ -642,21 +806,57 @@ class _SettingsState extends State<Settings> {
                       ],
                     ),
                   ),
-                  AnimatedContainer(
-                    height: specificSoundSettings ? 60 : 0,
-                    width: w,
-                    duration: duration500,
+                  SizedBox(
+                    height: 15,
+                  ),
+                  AnimatedOpacity(
+                    opacity: specificSoundSettings ? 1.0 : 0.0,
+                    duration: duration600,
                     curve: fastOutSlowIn,
-                    margin: EdgeInsets.only(
-                      top: 15,
-                    ),
-                    decoration: BoxDecoration(
+                    child: ClipRRect(
                       borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                          topRight: Radius.circular(5)),
-                      color: Colors.black38,
+                          topLeft: Radius.circular(30),
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                          topRight: Radius.circular(1)),
+                      child: AnimatedContainer(
+                        height: specificSoundSettings ? 60 : 0,
+                        width: specificSoundSettings ? w : 0,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(1),
+                        duration: duration700,
+                        curve: Curves.ease,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              bottomLeft: Radius.circular(30),
+                              bottomRight: Radius.circular(30),
+                              topRight: Radius.circular(0)),
+                          color: Colors.black38,
+                        ),
+                        child: AnimatedOpacity(
+                          opacity: specificSoundSettings ? 1.0 : 0.0,
+                          duration: duration200,
+                          curve: fastOutSlowIn,
+                          child: SingleChildScrollView(
+                            physics: BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                  7,
+                                  (index) => Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 13.0,
+                                            right: index == 6 ? 13 : 0),
+                                        child: _toggleContainer(
+                                            "Tone ${index + 1}", () {
+                                          setSpecificTone(index);
+                                        }, specificTone == index),
+                                      )),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   )
                 ],
@@ -680,17 +880,17 @@ class _SettingsState extends State<Settings> {
         duration: duration400,
         curve: fastOutSlowIn,
         decoration: BoxDecoration(
-          color: selected ? Colors.transparent : activeTextColor,
+          color: !selected ? Colors.transparent : activeTextColor,
           borderRadius: BorderRadius.circular(200),
           border: Border.all(
-              color: selected ? activeTextColor : Colors.transparent),
+              color: !selected ? activeTextColor : Colors.transparent),
         ),
         child: FittedBox(
           child: AnimatedDefaultTextStyle(
-            duration: duration500,
+            duration: duration300,
             child: Text(name),
             style: poppinsMedium.copyWith(
-              color: !selected ? Colors.white60 : activeTextColor,
+              color: selected ? Colors.white60 : activeTextColor,
             ),
           ),
         ),
@@ -699,15 +899,30 @@ class _SettingsState extends State<Settings> {
   }
 }
 
-class CustomRangeTextInputFormatter extends TextInputFormatter {
+String getFormattedText(String text) {
+  if (text.isEmpty)
+    text = "00";
+  else {
+    if (int.parse(text) < 10 && text.length < 2) {
+      text = "0$text";
+    }
+  }
+  return text;
+}
 
+class CustomRangeTextInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue,TextEditingValue newValue,) {
-    if(newValue.text == '')
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text == '')
       return TextEditingValue();
-    else if(int.parse(newValue.text) < 0)
+    else if (int.parse(newValue.text) < 0)
       return TextEditingValue().copyWith(text: '00');
 
-    return int.parse(newValue.text) > 59 ? TextEditingValue().copyWith(text: '59') : newValue;
+    return int.parse(newValue.text) > 59
+        ? TextEditingValue().copyWith(text: '59')
+        : newValue;
   }
 }

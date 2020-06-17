@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stopwatch/models/show_settings.dart';
 import 'components/stopwatch_controls.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    initializePrefs();
     super.initState();
   }
 
@@ -59,6 +61,40 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  void initializePrefs() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    if(_prefs.getBool(intervalActionsKey)==null)
+      await _prefs.setBool(intervalActionsKey, false);
+
+    if(_prefs.getBool(specificActionsKey)==null)
+      await _prefs.setBool(specificActionsKey, false);
+
+    if(_prefs.getStringList(intervalTimeKey)==null)
+      await _prefs.setStringList(intervalTimeKey, ["00","00","00"]);
+
+    if(_prefs.getStringList(specificTimeKey)==null)
+      await _prefs.setStringList(specificTimeKey, ["00","00","00"]);
+
+    if(_prefs.getBool(autoLapKey)==null)
+      await _prefs.setBool(autoLapKey, false);
+
+    if(_prefs.getBool(playSoundKey)==null)
+      await _prefs.setBool(playSoundKey, false);
+
+    if(_prefs.getInt(intervalToneKey)==null)
+      await _prefs.setInt(intervalToneKey, 0);
+
+    if(_prefs.getBool(stopClockKey)==null)
+      await _prefs.setBool(stopClockKey, false);
+
+    if(_prefs.getBool(specificPlaySoundKey)==null)
+      await _prefs.setBool(specificPlaySoundKey, false);
+
+    if(_prefs.getInt(specificToneKey)==null)
+      await _prefs.setInt(specificToneKey, 0);
+
   }
 }
 

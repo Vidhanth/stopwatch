@@ -32,6 +32,7 @@ dependencies:
   line_awesome_icons:
   wakelock:
   animations:
+  shared_preferences:
   auto_size_text:
 
 dev_dependencies:
