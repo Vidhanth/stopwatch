@@ -8,6 +8,9 @@
 *.apk
 *.ap_
 
+.flutter-plugins-dependencies
+.flutter-plugins
+
 # Files for the ART/Dalvik VM
 *.dex
 
