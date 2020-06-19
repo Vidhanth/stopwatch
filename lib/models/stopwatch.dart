@@ -85,10 +85,10 @@ class StopWatch with ChangeNotifier {
       int interval = getIntervalTimeSeconds(intervalTime);
       int currentTime = getCurrentTimeSeconds(hours, minutes, seconds);
 
-      if(interval!=0){
+      if (interval != 0) {
         if (currentTime % interval == 0) {
           if (_prefs.getBool(playSoundKey)) {
-            playSounds(_prefs.getInt(intervalToneKey), interval);
+            playSounds(intervalAudio);
             print("Playing tone ${_prefs.getInt(intervalToneKey)}");
           }
           if (_prefs.getBool(autoLapKey)) {
@@ -105,16 +105,19 @@ class StopWatch with ChangeNotifier {
       int spSec = int.parse(sp[2]);
 
       if (spHour == hours && spMin == minutes && spSec == seconds) {
-        if (_prefs.getBool(specificPlaySoundKey)) {
-          playSounds(_prefs.getInt(specificToneKey), 10);
-        }
-        if (_prefs.getBool(speakTimeKey)) _tts.speak(getSpeechString());
-
-        if (_prefs.getBool(specificAutoLapKey)) addLap(getContext);
-
         if (_prefs.getBool(stopClockKey)) {
           stop();
         }
+
+        if (_prefs.getBool(specificPlaySoundKey)) {
+          playSounds(specificAudio);
+        }
+
+        if (_prefs.getBool(speakTimeKey)) {
+          _tts.speak(getSpeechString());
+        }
+
+        if (_prefs.getBool(specificAutoLapKey)) addLap(getContext);
       }
     }
   }

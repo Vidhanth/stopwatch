@@ -7,6 +7,11 @@ Color whiteShadow = Colors.white.withOpacity(0.07);
 Color blackShadow = Colors.black.withOpacity(0.45);
 Color primaryTextColor = Colors.grey[400];
 
+
+AssetsAudioPlayer intervalAudio = AssetsAudioPlayer();
+AssetsAudioPlayer specificAudio = AssetsAudioPlayer();
+
+
 //Keys
 final String playSoundKey = "psk";
 final String specificPlaySoundKey = "spsk";
@@ -67,11 +72,11 @@ const TextStyle poppinsBold = TextStyle(
 );
 
 
-void playSounds(int tone, int interval) {
-  AssetsAudioPlayer.playAndForget(Audio("assets/audios/tone$tone.mp3"), playSpeed: _getPlayBackSpeed(tone, interval));
+void playSounds(AssetsAudioPlayer audio,) {
+  audio.play();
 }
 
-double _getPlayBackSpeed(int tone, int interval) {
+double getPlayBackSpeed(int tone, int interval) {
   if (tone == 5 || tone == 3)
     return 1;
   else {

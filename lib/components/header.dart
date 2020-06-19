@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,8 @@ bool soundSettings = false;
 int intervalTone = 0;
 int specificTone = 0;
 
+
+
 class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,13 +49,18 @@ class Header extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            height: w * 0.15,
-            child: PoppinsBold(
-              text: "Stopwatch",
-              textSize: 130,
-              textAlign: TextAlign.start,
-              textColor: primaryTextColor,
+          GestureDetector(
+            onTap: (){
+              toggleSettings(context);
+            },
+            child: Container(
+              height: w * 0.15,
+              child: PoppinsBold(
+                text: "Stopwatch",
+                textSize: 130,
+                textAlign: TextAlign.start,
+                textColor: primaryTextColor,
+              ),
             ),
           ),
           CustomButton(
@@ -90,15 +98,14 @@ class Header extends StatelessWidget {
 }
 
 void toggleSettings(BuildContext context) {
-  if(!initialized)
-    initializePrefs();
+  if (!initialized) initializePrefs();
   ShowSettings settings = Provider.of<ShowSettings>(context, listen: false);
   if (settings.showSettings) {
     saveIntervalTime(intervalTime);
     saveSpecificTime(specificTime);
   }
-  if(specificSoundSettings) specificSoundSettings = false;
-  if(soundSettings) soundSettings = false;
+  if (specificSoundSettings) specificSoundSettings = false;
+  if (soundSettings) soundSettings = false;
   settings.showSettings = !settings.showSettings;
   if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
 }
@@ -131,11 +138,11 @@ saveIntervalTime(List<String> newTime) async {
   _intControllerHour.text = intervalTime[0];
   _intControllerMin.text = intervalTime[1];
   _intControllerSec.text = intervalTime[2];
-  if(intervalTime.toString() == "[00, 00, 00]"){
+  if (intervalTime.toString() == "[00, 00, 00]") {
     intervalActions = false;
     await _prefs.setBool(intervalActionsKey, intervalActions);
   }
-  if(specificTime.toString() == "[00, 00, 00]"){
+  if (specificTime.toString() == "[00, 00, 00]") {
     specificActions = false;
     await _prefs.setBool(specificActionsKey, specificActions);
   }
@@ -159,12 +166,10 @@ class _SettingsState extends State<Settings> {
   Color activeTextColor = Colors.black.withOpacity(0.75);
   Color inactiveTextColor = Colors.black.withOpacity(0.45);
 
-
   togglePlaySound() async {
     setState(() {
       playSound = !playSound;
-      if(soundSettings)
-        soundSettings = false;
+      if (soundSettings) soundSettings = false;
     });
     await _prefs.setBool(playSoundKey, playSound);
   }
@@ -179,7 +184,7 @@ class _SettingsState extends State<Settings> {
     if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
     setState(() {
       intervalActions = !intervalActions;
-      if(soundSettings) soundSettings = false;
+      if (soundSettings) soundSettings = false;
     });
     await _prefs.setBool(intervalActionsKey, intervalActions);
   }
@@ -195,16 +200,16 @@ class _SettingsState extends State<Settings> {
     if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
     setState(() {
       specificActions = !specificActions;
-      if(specificSoundSettings) specificSoundSettings = false;
+      if (specificSoundSettings) specificSoundSettings = false;
     });
     await _prefs.setBool(specificActionsKey, specificActions);
   }
 
   toggleSpecificPlaySound() async {
     setState(() {
-      if(speakTime) toggleSpeakTime();
+      if (speakTime) toggleSpeakTime();
       specificPlaySound = !specificPlaySound;
-      if(specificSoundSettings) specificSoundSettings = !specificSoundSettings;
+      if (specificSoundSettings) specificSoundSettings = !specificSoundSettings;
     });
     await _prefs.setBool(specificPlaySoundKey, specificPlaySound);
   }
@@ -218,8 +223,7 @@ class _SettingsState extends State<Settings> {
 
   toggleSpeakTime() async {
     setState(() {
-      if(specificPlaySound)
-        toggleSpecificPlaySound();
+      if (specificPlaySound) toggleSpecificPlaySound();
       speakTime = !speakTime;
     });
     await _prefs.setBool(speakTimeKey, speakTime);
@@ -242,7 +246,8 @@ class _SettingsState extends State<Settings> {
     setState(() {
       intervalTone = tone;
     });
-    playSounds(tone, 10);
+    intervalAudio.open(Audio("assets/audios/tone$tone.mp3"), playSpeed: getPlayBackSpeed(tone, 10));
+    playSounds(intervalAudio);
     await _prefs.setInt(intervalToneKey, intervalTone);
   }
 
@@ -250,7 +255,8 @@ class _SettingsState extends State<Settings> {
     setState(() {
       specificTone = tone;
     });
-    playSounds(tone, 10);
+    specificAudio.open(Audio("assets/audios/tone$tone.mp3"), playSpeed: getPlayBackSpeed(tone, 10));
+    playSounds(specificAudio);
     await _prefs.setInt(specificToneKey, specificTone);
   }
 
@@ -382,7 +388,7 @@ class _SettingsState extends State<Settings> {
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.zero),
                                 style: poppinsBold.copyWith(
-                                    fontSize: 50, color: activeTextColor),
+                                    fontSize: 45, color: activeTextColor),
                               ),
                             ),
                             Container(
@@ -426,7 +432,7 @@ class _SettingsState extends State<Settings> {
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.zero),
                                 style: poppinsBold.copyWith(
-                                    fontSize: 50, color: activeTextColor),
+                                    fontSize: 45, color: activeTextColor),
                               ),
                             ),
                             Container(
@@ -470,7 +476,7 @@ class _SettingsState extends State<Settings> {
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.zero),
                                 style: poppinsBold.copyWith(
-                                    fontSize: 50, color: activeTextColor),
+                                    fontSize: 45, color: activeTextColor),
                               ),
                             ),
                             Container(
@@ -547,7 +553,7 @@ class _SettingsState extends State<Settings> {
                           borderWidth: 1,
                           hasBorder: soundSettings ? false : true,
                           borderColor: activeTextColor,
-                          height: 38,
+                          height: 40,
                           width: 75,
                         )
                       ],
@@ -594,7 +600,8 @@ class _SettingsState extends State<Settings> {
                                   (index) => Padding(
                                         padding: EdgeInsets.only(
                                             left: 13.0,
-                                            right: index == maxTones-1 ? 13 : 0),
+                                            right:
+                                                index == maxTones - 1 ? 13 : 0),
                                         child: _toggleContainer(
                                             "Tone ${index + 1}", () {
                                           setIntervalTone(index);
@@ -681,7 +688,7 @@ class _SettingsState extends State<Settings> {
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.zero),
                                 style: poppinsBold.copyWith(
-                                    fontSize: 50, color: activeTextColor),
+                                    fontSize: 45, color: activeTextColor),
                               ),
                             ),
                             Container(
@@ -725,7 +732,7 @@ class _SettingsState extends State<Settings> {
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.zero),
                                 style: poppinsBold.copyWith(
-                                    fontSize: 50, color: activeTextColor),
+                                    fontSize: 45, color: activeTextColor),
                               ),
                             ),
                             Container(
@@ -769,7 +776,7 @@ class _SettingsState extends State<Settings> {
                                     border: InputBorder.none,
                                     contentPadding: EdgeInsets.zero),
                                 style: poppinsBold.copyWith(
-                                    fontSize: 50, color: activeTextColor),
+                                    fontSize: 45, color: activeTextColor),
                               ),
                             ),
                             Container(
@@ -791,13 +798,13 @@ class _SettingsState extends State<Settings> {
                   FittedBox(
                     child: Row(
                       children: <Widget>[
-                        _toggleContainer("Speak time",
-                            toggleSpeakTime, speakTime),
+                        _toggleContainer(
+                            "Speak time", toggleSpeakTime, speakTime),
                         SizedBox(
                           width: 10,
                         ),
-                        _toggleContainer("Play sound",
-                            toggleSpecificPlaySound, specificPlaySound),
+                        _toggleContainer("Play sound", toggleSpecificPlaySound,
+                            specificPlaySound),
                         SizedBox(
                           width: 10,
                         ),
@@ -841,7 +848,7 @@ class _SettingsState extends State<Settings> {
                           borderWidth: 1,
                           hasBorder: specificSoundSettings ? false : true,
                           borderColor: activeTextColor,
-                          height: 38,
+                          height: 40,
                           width: 75,
                         )
                       ],
@@ -852,7 +859,8 @@ class _SettingsState extends State<Settings> {
                     duration: duration600,
                     curve: fastOutSlowIn,
                     child: AnimatedPadding(
-                      padding: EdgeInsets.symmetric(vertical: specificSoundSettings ?15 : 5),
+                      padding: EdgeInsets.symmetric(
+                          vertical: specificSoundSettings ? 15 : 5),
                       duration: duration700,
                       curve: fastOutSlowIn,
                       child: ClipRRect(
@@ -889,7 +897,9 @@ class _SettingsState extends State<Settings> {
                                     (index) => Padding(
                                           padding: EdgeInsets.only(
                                               left: 13.0,
-                                              right: index == maxTones-1 ? 13 : 0),
+                                              right: index == maxTones - 1
+                                                  ? 13
+                                                  : 0),
                                           child: _toggleContainer(
                                               "Tone ${index + 1}", () {
                                             setSpecificTone(index);
@@ -902,17 +912,22 @@ class _SettingsState extends State<Settings> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 0,),
-                  Row(
-                    children: <Widget>[
-                      _toggleContainer("Lap time",
-                          toggleSpecificAutoLap, specificAutoLap),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      _toggleContainer("Stop timer",
-                          toggleSpecificStopClock, specificStopClock),
-                    ],
+                  FittedBox(
+                    child: Row(
+                      children: <Widget>[
+                        _toggleContainer(
+                            "Lap time", toggleSpecificAutoLap, specificAutoLap),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        _toggleContainer("Stop timer", toggleSpecificStopClock,
+                            specificStopClock),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        _toggleContainer(" ", () {}, false),
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -929,8 +944,8 @@ class _SettingsState extends State<Settings> {
         onPressed();
       },
       child: AnimatedContainer(
-        height: 40,
-        width: 130,
+        height: name.trim().isEmpty ? 0 : 40,
+        width: name.trim().isEmpty ? 75 : 130,
         alignment: Alignment.center,
         duration: duration400,
         curve: fastOutSlowIn,
@@ -938,7 +953,8 @@ class _SettingsState extends State<Settings> {
           color: !selected ? Colors.transparent : activeTextColor,
           borderRadius: BorderRadius.circular(200),
           border: Border.all(
-              color: !selected ? activeTextColor : Colors.transparent),
+            color: !selected ? activeTextColor : Colors.transparent,
+          ),
         ),
         child: FittedBox(
           child: AnimatedDefaultTextStyle(
@@ -952,7 +968,6 @@ class _SettingsState extends State<Settings> {
       ),
     );
   }
-
 }
 
 String getFormattedText(String text) {

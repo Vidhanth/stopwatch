@@ -1,3 +1,4 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stopwatch/models/show_settings.dart';
@@ -65,6 +66,7 @@ class _MyAppState extends State<MyApp> {
 
   void initializePrefs() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
+
     if(_prefs.getBool(intervalActionsKey)==null)
       await _prefs.setBool(intervalActionsKey, false);
 
@@ -79,6 +81,9 @@ class _MyAppState extends State<MyApp> {
 
     if(_prefs.getBool(autoLapKey)==null)
       await _prefs.setBool(autoLapKey, false);
+
+    if(_prefs.getBool(specificAutoLapKey)==null)
+      await _prefs.setBool(specificAutoLapKey, false);
 
     if(_prefs.getBool(playSoundKey)==null)
       await _prefs.setBool(playSoundKey, false);
@@ -97,6 +102,10 @@ class _MyAppState extends State<MyApp> {
 
     if(_prefs.getBool(speakTimeKey)==null)
       await _prefs.setBool(speakTimeKey, false);
+
+    intervalAudio.open(Audio("assets/audios/tone${_prefs.getInt(intervalToneKey)}.mp3"), autoStart: false, playSpeed: getPlayBackSpeed(_prefs.getInt(intervalToneKey), 10));
+
+    specificAudio.open(Audio("assets/audios/tone${_prefs.getInt(specificToneKey)}.mp3"), autoStart: false, playSpeed: getPlayBackSpeed(_prefs.getInt(specificToneKey), 10));
 
   }
 }
