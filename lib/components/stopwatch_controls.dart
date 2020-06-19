@@ -11,6 +11,7 @@ import 'package:wakelock/wakelock.dart';
 BuildContext _context;
 
 class StopWatchControls extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
 

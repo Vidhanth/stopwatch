@@ -1,3 +1,4 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 
 //Colors
@@ -19,19 +20,6 @@ final String intervalToneKey = "it";
 final String specificToneKey = "st";
 final String intervalTimeKey = "itk";
 final String specificTimeKey = "stk";
-final List<String> listKeys = [
-  playSoundKey,
-  specificPlaySoundKey,
-  autoLapKey,
-  stopClockKey,
-  speakTimeKey,
-  intervalActionsKey,
-  specificActionsKey,
-  intervalToneKey,
-  specificToneKey,
-  intervalTimeKey,
-  specificTimeKey,
-];
 
 //Durations
 const Duration duration100 = Duration(milliseconds: 100);
@@ -45,6 +33,9 @@ const Duration duration800 = Duration(milliseconds: 800);
 
 //Controllers
 ScrollController lapsController = ScrollController();
+
+//Other Constants
+final int maxTones = 6;
 
 //Curves
 const Curve fastOutSlowIn = Curves.fastOutSlowIn;
@@ -74,3 +65,19 @@ const TextStyle poppinsBold = TextStyle(
   fontFamily: _poppins,
   fontWeight: FontWeight.w700,
 );
+
+
+void playSounds(int tone, int interval) {
+  AssetsAudioPlayer.playAndForget(Audio("assets/audios/tone$tone.mp3"), playSpeed: _getPlayBackSpeed(tone, interval));
+}
+
+double _getPlayBackSpeed(int tone, int interval) {
+  if (tone == 5 || tone == 3)
+    return 1;
+  else {
+    if (interval <= 2) {
+      return 2;
+    } else
+      return 1;
+  }
+}

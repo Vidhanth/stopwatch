@@ -97,6 +97,8 @@ void toggleSettings(BuildContext context) {
     saveIntervalTime(intervalTime);
     saveSpecificTime(specificTime);
   }
+  if(specificSoundSettings) specificSoundSettings = false;
+  if(soundSettings) soundSettings = false;
   settings.showSettings = !settings.showSettings;
   if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
 }
@@ -157,6 +159,7 @@ class _SettingsState extends State<Settings> {
   Color activeTextColor = Colors.black.withOpacity(0.75);
   Color inactiveTextColor = Colors.black.withOpacity(0.45);
 
+
   togglePlaySound() async {
     setState(() {
       playSound = !playSound;
@@ -176,6 +179,7 @@ class _SettingsState extends State<Settings> {
     if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
     setState(() {
       intervalActions = !intervalActions;
+      if(soundSettings) soundSettings = false;
     });
     await _prefs.setBool(intervalActionsKey, intervalActions);
   }
@@ -191,6 +195,7 @@ class _SettingsState extends State<Settings> {
     if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
     setState(() {
       specificActions = !specificActions;
+      if(specificSoundSettings) specificSoundSettings = false;
     });
     await _prefs.setBool(specificActionsKey, specificActions);
   }
@@ -237,6 +242,7 @@ class _SettingsState extends State<Settings> {
     setState(() {
       intervalTone = tone;
     });
+    playSounds(tone, 10);
     await _prefs.setInt(intervalToneKey, intervalTone);
   }
 
@@ -244,8 +250,19 @@ class _SettingsState extends State<Settings> {
     setState(() {
       specificTone = tone;
     });
-    print(specificTone);
+    playSounds(tone, 10);
     await _prefs.setInt(specificToneKey, specificTone);
+  }
+
+  @override
+  void dispose() {
+    _speControllerSec.dispose();
+    _speControllerMin.dispose();
+    _speControllerHour.dispose();
+    _intControllerHour.dispose();
+    _intControllerMin.dispose();
+    _intControllerSec.dispose();
+    super.dispose();
   }
 
   @override
@@ -573,11 +590,11 @@ class _SettingsState extends State<Settings> {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: List.generate(
-                                  7,
+                                  maxTones,
                                   (index) => Padding(
                                         padding: EdgeInsets.only(
                                             left: 13.0,
-                                            right: index == 6 ? 13 : 0),
+                                            right: index == maxTones-1 ? 13 : 0),
                                         child: _toggleContainer(
                                             "Tone ${index + 1}", () {
                                           setIntervalTone(index);
@@ -868,11 +885,11 @@ class _SettingsState extends State<Settings> {
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: List.generate(
-                                    7,
+                                    maxTones,
                                     (index) => Padding(
                                           padding: EdgeInsets.only(
                                               left: 13.0,
-                                              right: index == 6 ? 13 : 0),
+                                              right: index == maxTones-1 ? 13 : 0),
                                           child: _toggleContainer(
                                               "Tone ${index + 1}", () {
                                             setSpecificTone(index);

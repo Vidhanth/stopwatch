@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stopwatch/components/header.dart';
 import 'package:stopwatch/components/stopwatch_controls.dart';
+import 'package:stopwatch/services/constants.dart';
 import 'package:stopwatch/services/constants.dart';
 
 class StopWatch with ChangeNotifier {
@@ -81,14 +80,21 @@ class StopWatch with ChangeNotifier {
   }
 
   void runActions() async {
-    print("running actions $seconds");
-
     if (_prefs.getBool(intervalActionsKey)) {
-      if (_prefs.getBool(playSoundKey)) {
-        //TODO Play interval sound
-      }
-      if (_prefs.getBool(autoLapKey)) {
-        //TODO autoLap
+      List<String> intervalTime = _prefs.getStringList(intervalTimeKey);
+      int interval = getIntervalTimeSeconds(intervalTime);
+      int currentTime = getCurrentTimeSeconds(hours, minutes, seconds);
+
+      if(interval!=0){
+        if (currentTime % interval == 0) {
+          if (_prefs.getBool(playSoundKey)) {
+            playSounds(_prefs.getInt(intervalToneKey), interval);
+            print("Playing tone ${_prefs.getInt(intervalToneKey)}");
+          }
+          if (_prefs.getBool(autoLapKey)) {
+            addLap(getContext);
+          }
+        }
       }
     }
 
@@ -100,13 +106,11 @@ class StopWatch with ChangeNotifier {
 
       if (spHour == hours && spMin == minutes && spSec == seconds) {
         if (_prefs.getBool(specificPlaySoundKey)) {
-          //TODO play specific sound
+          playSounds(_prefs.getInt(specificToneKey), 10);
         }
-        if(_prefs.getBool(speakTimeKey))
-          _tts.speak(getSpeechString());
+        if (_prefs.getBool(speakTimeKey)) _tts.speak(getSpeechString());
 
-        if(_prefs.getBool(specificAutoLapKey))
-          addLap(getContext);
+        if (_prefs.getBool(specificAutoLapKey)) addLap(getContext);
 
         if (_prefs.getBool(stopClockKey)) {
           stop();
@@ -130,38 +134,43 @@ class StopWatch with ChangeNotifier {
       else
         hourText = "$hours hours";
 
-      if((minutes==0 && seconds!=0)||(minutes!=0 && seconds==0))
+      if ((minutes == 0 && seconds != 0) || (minutes != 0 && seconds == 0))
         hourAnd = "and";
-
     }
 
-    if(minutes>0){
-      if(minutes == 1)
+    if (minutes > 0) {
+      if (minutes == 1)
         minText = "$minutes minute";
       else
         minText = "$minutes minutes";
 
-      if(seconds>0)
-        minAnd = "and";
-
+      if (seconds > 0) minAnd = "and";
     }
 
-    if(seconds>0){
-      if(seconds == 1)
+    if (seconds > 0) {
+      if (seconds == 1)
         secText = "$seconds second";
       else
         secText = "$seconds seconds";
     }
 
     fin = "$hourText $hourAnd $minText $minAnd $secText".trim();
-    if(fin.endsWith("s"))
+    if (fin.endsWith("s"))
       al = "$fin have passed.";
     else
       al = "$fin has passed.";
 
     return al;
-
-
-
   }
+}
+
+int getIntervalTimeSeconds(List<String> intervalTime) {
+  int hourSeconds = int.parse(intervalTime[0]) * 3600;
+  int minSeconds = int.parse(intervalTime[1]) * 60;
+  int seconds = int.parse(intervalTime[2]);
+  return hourSeconds + minSeconds + seconds;
+}
+
+int getCurrentTimeSeconds(int hour, int min, int sec) {
+  return (hour * 3600) + (min * 60) + sec;
 }
