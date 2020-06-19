@@ -95,6 +95,9 @@ class _MyAppState extends State<MyApp> {
     if(_prefs.getInt(specificToneKey)==null)
       await _prefs.setInt(specificToneKey, 0);
 
+    if(_prefs.getBool(speakTimeKey)==null)
+      await _prefs.setBool(speakTimeKey, false);
+
   }
 }
 
@@ -175,14 +178,9 @@ Future<bool> hideSettings(BuildContext context) {
   ShowSettings settings = Provider.of<ShowSettings>(
       context,
       listen: false);
-  if(FocusScope.of(context).hasFocus)
-    FocusScope.of(context).unfocus();
-
-  if (settings.showSettings){
-    settings.showSettings = false;
-    return Future.value(false);
-  } else {
-    return Future.value(true);
+  if(settings.showSettings){
+    toggleSettings(context);
+    return Future.value(settings.showSettings);
   }
-
+  return Future.value(true);
 }

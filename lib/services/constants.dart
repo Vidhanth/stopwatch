@@ -13,6 +13,8 @@ final String autoLapKey = "alk";
 final String stopClockKey = "sck";
 final String intervalActionsKey = "iak";
 final String specificActionsKey = "sak";
+final String speakTimeKey = "sptk";
+final String specificAutoLapKey = "salk";
 final String intervalToneKey = "it";
 final String specificToneKey = "st";
 final String intervalTimeKey = "itk";
@@ -22,6 +24,7 @@ final List<String> listKeys = [
   specificPlaySoundKey,
   autoLapKey,
   stopClockKey,
+  speakTimeKey,
   intervalActionsKey,
   specificActionsKey,
   intervalToneKey,

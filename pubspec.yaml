@@ -31,8 +31,8 @@ dependencies:
   provider:
   line_awesome_icons:
   wakelock:
-  animations:
   shared_preferences:
+  flutter_tts:
   auto_size_text:
 
 dev_dependencies:

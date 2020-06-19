@@ -7,9 +7,14 @@ import 'package:provider/provider.dart';
 import 'package:stopwatch/services/custom_buttons.dart';
 import 'package:wakelock/wakelock.dart';
 
+
+BuildContext _context;
+
 class StopWatchControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    _context = context;
     StopWatch stopwatch = Provider.of<StopWatch>(context);
     double w = MediaQuery.of(context).size.width;
 
@@ -144,6 +149,8 @@ void startStopwatch(BuildContext context) {
   }
 
 }
+
+BuildContext get getContext => _context;
 
 void resetStopwatch(BuildContext context) {
 

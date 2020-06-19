@@ -13,6 +13,7 @@ import 'package:stopwatch/services/poppins_text.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 
 SharedPreferences _prefs;
+bool initialized = false;
 List<String> intervalTime = ["00", "00", "00"];
 List<String> specificTime = ["00", "00", "00"];
 TextEditingController _intControllerHour;
@@ -21,6 +22,18 @@ TextEditingController _intControllerSec;
 TextEditingController _speControllerHour;
 TextEditingController _speControllerMin;
 TextEditingController _speControllerSec;
+bool intervalActions = false;
+bool playSound = false;
+bool autoLap = false;
+bool specificActions = false;
+bool specificPlaySound = false;
+bool specificStopClock = false;
+bool specificAutoLap = false;
+bool speakTime = false;
+bool specificSoundSettings = false;
+bool soundSettings = false;
+int intervalTone = 0;
+int specificTone = 0;
 
 class Header extends StatelessWidget {
   @override
@@ -77,6 +90,8 @@ class Header extends StatelessWidget {
 }
 
 void toggleSettings(BuildContext context) {
+  if(!initialized)
+    initializePrefs();
   ShowSettings settings = Provider.of<ShowSettings>(context, listen: false);
   if (settings.showSettings) {
     saveIntervalTime(intervalTime);
@@ -86,11 +101,42 @@ void toggleSettings(BuildContext context) {
   if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
 }
 
+void initializePrefs() async {
+  _prefs = await SharedPreferences.getInstance();
+  print("Initializing Preferences");
+  intervalActions = _prefs.getBool(intervalActionsKey);
+  specificActions = _prefs.getBool(specificActionsKey);
+  specificTime = _prefs.getStringList(specificTimeKey);
+  intervalTime = _prefs.getStringList(intervalTimeKey);
+  print(intervalTime);
+  intervalTone = _prefs.getInt(intervalToneKey);
+  specificTone = _prefs.getInt(specificToneKey);
+  playSound = _prefs.getBool(playSoundKey);
+  specificPlaySound = _prefs.getBool(specificPlaySoundKey);
+  autoLap = _prefs.getBool(autoLapKey);
+  specificStopClock = _prefs.getBool(stopClockKey);
+  speakTime = _prefs.getBool(speakTimeKey);
+  _intControllerHour = TextEditingController(text: intervalTime[0]);
+  _intControllerMin = TextEditingController(text: intervalTime[1]);
+  _intControllerSec = TextEditingController(text: intervalTime[2]);
+  _speControllerHour = TextEditingController(text: specificTime[0]);
+  _speControllerMin = TextEditingController(text: specificTime[1]);
+  _speControllerSec = TextEditingController(text: specificTime[2]);
+  initialized = true;
+}
+
 saveIntervalTime(List<String> newTime) async {
   _intControllerHour.text = intervalTime[0];
   _intControllerMin.text = intervalTime[1];
   _intControllerSec.text = intervalTime[2];
-  print(intervalTime);
+  if(intervalTime.toString() == "[00, 00, 00]"){
+    intervalActions = false;
+    await _prefs.setBool(intervalActionsKey, intervalActions);
+  }
+  if(specificTime.toString() == "[00, 00, 00]"){
+    specificActions = false;
+    await _prefs.setBool(specificActionsKey, specificActions);
+  }
   await _prefs.setStringList(intervalTimeKey, newTime);
 }
 
@@ -108,23 +154,14 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  bool intervalActions = false;
-  bool playSound = false;
-  bool autoLap = false;
-  bool specificActions = false;
-  bool specificPlaySound = false;
-  bool specificStopClock = false;
-  bool specificAutoLap = false;
-  bool specificSoundSettings = false;
-  bool soundSettings = false;
-  int intervalTone = 0;
-  int specificTone = 0;
   Color activeTextColor = Colors.black.withOpacity(0.75);
   Color inactiveTextColor = Colors.black.withOpacity(0.45);
 
   togglePlaySound() async {
     setState(() {
       playSound = !playSound;
+      if(soundSettings)
+        soundSettings = false;
     });
     await _prefs.setBool(playSoundKey, playSound);
   }
@@ -160,7 +197,9 @@ class _SettingsState extends State<Settings> {
 
   toggleSpecificPlaySound() async {
     setState(() {
+      if(speakTime) toggleSpeakTime();
       specificPlaySound = !specificPlaySound;
+      if(specificSoundSettings) specificSoundSettings = !specificSoundSettings;
     });
     await _prefs.setBool(specificPlaySoundKey, specificPlaySound);
   }
@@ -172,10 +211,26 @@ class _SettingsState extends State<Settings> {
     await _prefs.setBool(stopClockKey, specificStopClock);
   }
 
+  toggleSpeakTime() async {
+    setState(() {
+      if(specificPlaySound)
+        toggleSpecificPlaySound();
+      speakTime = !speakTime;
+    });
+    await _prefs.setBool(speakTimeKey, speakTime);
+  }
+
   toggleSpecificSoundSettings() {
     setState(() {
       specificSoundSettings = !specificSoundSettings;
     });
+  }
+
+  toggleSpecificAutoLap() async {
+    setState(() {
+      specificAutoLap = !specificAutoLap;
+    });
+    await _prefs.setBool(specificAutoLapKey, specificAutoLap);
   }
 
   setIntervalTone(int tone) async {
@@ -189,36 +244,8 @@ class _SettingsState extends State<Settings> {
     setState(() {
       specificTone = tone;
     });
-    await _prefs.setInt(intervalToneKey, specificTone);
-  }
-
-  @override
-  void initState() {
-    Future.delayed(duration200, (){
-      initializePrefs();
-    });
-    super.initState();
-  }
-
-  void initializePrefs() async {
-    _prefs = await SharedPreferences.getInstance();
-    intervalActions = _prefs.getBool(intervalActionsKey);
-    specificActions = _prefs.getBool(specificActionsKey);
-    specificTime = _prefs.getStringList(specificTimeKey);
-    intervalTime = _prefs.getStringList(intervalTimeKey);
-    print(intervalTime);
-    intervalTone = _prefs.getInt(intervalToneKey);
-    specificTone = _prefs.getInt(specificToneKey);
-    playSound = _prefs.getBool(playSoundKey);
-    specificPlaySound = _prefs.getBool(specificPlaySoundKey);
-    autoLap = _prefs.getBool(autoLapKey);
-    specificStopClock = _prefs.getBool(stopClockKey);
-    _intControllerHour = TextEditingController(text: intervalTime[0]);
-    _intControllerMin = TextEditingController(text: intervalTime[1]);
-    _intControllerSec = TextEditingController(text: intervalTime[2]);
-    _speControllerHour = TextEditingController(text: specificTime[0]);
-    _speControllerMin = TextEditingController(text: specificTime[1]);
-    _speControllerSec = TextEditingController(text: specificTime[2]);
+    print(specificTone);
+    await _prefs.setInt(specificToneKey, specificTone);
   }
 
   @override
@@ -465,6 +492,7 @@ class _SettingsState extends State<Settings> {
                         ),
                         CustomButton(
                           duration: duration500,
+                          disabled: !playSound,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
@@ -745,23 +773,19 @@ class _SettingsState extends State<Settings> {
                   ),
                   FittedBox(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            _toggleContainer("Stop timer",
-                                toggleSpecificStopClock, specificStopClock),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            _toggleContainer("Play sound",
-                                toggleSpecificPlaySound, specificPlaySound),
-                          ],
+                        _toggleContainer("Speak time",
+                            toggleSpeakTime, speakTime),
+                        SizedBox(
+                          width: 10,
                         ),
+                        _toggleContainer("Play sound",
+                            toggleSpecificPlaySound, specificPlaySound),
                         SizedBox(
                           width: 10,
                         ),
                         CustomButton(
+                          disabled: !specificPlaySound,
                           duration: duration500,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -806,58 +830,72 @@ class _SettingsState extends State<Settings> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
                   AnimatedOpacity(
                     opacity: specificSoundSettings ? 1.0 : 0.0,
                     duration: duration600,
                     curve: fastOutSlowIn,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30),
-                          topRight: Radius.circular(1)),
-                      child: AnimatedContainer(
-                        height: specificSoundSettings ? 60 : 0,
-                        width: specificSoundSettings ? w : 0,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(1),
-                        duration: duration700,
-                        curve: Curves.ease,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(30),
-                              bottomLeft: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                              topRight: Radius.circular(0)),
-                          color: Colors.black38,
-                        ),
-                        child: AnimatedOpacity(
-                          opacity: specificSoundSettings ? 1.0 : 0.0,
-                          duration: duration200,
-                          curve: fastOutSlowIn,
-                          child: SingleChildScrollView(
-                            physics: BouncingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: List.generate(
-                                  7,
-                                  (index) => Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 13.0,
-                                            right: index == 6 ? 13 : 0),
-                                        child: _toggleContainer(
-                                            "Tone ${index + 1}", () {
-                                          setSpecificTone(index);
-                                        }, specificTone == index),
-                                      )),
+                    child: AnimatedPadding(
+                      padding: EdgeInsets.symmetric(vertical: specificSoundSettings ?15 : 5),
+                      duration: duration700,
+                      curve: fastOutSlowIn,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            bottomLeft: Radius.circular(30),
+                            bottomRight: Radius.circular(30),
+                            topRight: Radius.circular(1)),
+                        child: AnimatedContainer(
+                          height: specificSoundSettings ? 60 : 0,
+                          width: specificSoundSettings ? w : 0,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.all(1),
+                          duration: duration700,
+                          curve: Curves.ease,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                bottomLeft: Radius.circular(30),
+                                bottomRight: Radius.circular(30),
+                                topRight: Radius.circular(1)),
+                            color: Colors.black38,
+                          ),
+                          child: AnimatedOpacity(
+                            opacity: specificSoundSettings ? 1.0 : 0.0,
+                            duration: duration200,
+                            curve: fastOutSlowIn,
+                            child: SingleChildScrollView(
+                              physics: BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: List.generate(
+                                    7,
+                                    (index) => Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 13.0,
+                                              right: index == 6 ? 13 : 0),
+                                          child: _toggleContainer(
+                                              "Tone ${index + 1}", () {
+                                            setSpecificTone(index);
+                                          }, specificTone == index),
+                                        )),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
+                  ),
+                  SizedBox(height: 0,),
+                  Row(
+                    children: <Widget>[
+                      _toggleContainer("Lap time",
+                          toggleSpecificAutoLap, specificAutoLap),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      _toggleContainer("Stop timer",
+                          toggleSpecificStopClock, specificStopClock),
+                    ],
                   )
                 ],
               ),
@@ -897,6 +935,7 @@ class _SettingsState extends State<Settings> {
       ),
     );
   }
+
 }
 
 String getFormattedText(String text) {

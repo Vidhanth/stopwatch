@@ -20,6 +20,8 @@ class CustomButton extends StatelessWidget {
   final String tooltip;
   final Widget child;
   final double textSize;
+  final bool disabled;
+  final double disabledOpacity;
   final EdgeInsets margin;
   final TextStyle textStyle;
   final double radius;
@@ -30,6 +32,8 @@ class CustomButton extends StatelessWidget {
   CustomButton({
     this.radius = 40,
     this.height = 60,
+    this.disabled = false,
+    this.disabledOpacity = 0.5,
     this.textStyle = poppinsMedium,
     this.duration = duration400,
     this.spinner = const CircularProgressIndicator(),
@@ -54,38 +58,46 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: duration,
-      height: height,
-      margin: margin,
-      curve: fastOutSlowIn,
-      width: width ?? MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        border: Border.all(
-            color: hasBorder ? borderColor : Colors.transparent,
-            width: hasBorder ? borderWidth : 0),
-        color: color,
-        boxShadow: boxShadow ?? [
-          BoxShadow(
-              blurRadius: 10,
-              color: hasShadow ? Colors.black38 : Colors.transparent)
-        ],
-        borderRadius: BorderRadius.circular(radius),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: FlatButton(
-          highlightColor: highlightColor,
-          splashColor: splashColor,
-          padding: EdgeInsets.zero,
-          onPressed: isLoading ? null : onPressed,
-          child: Center(
-            child: isLoading
-                ? spinner
-                : child ?? Text(
-              title,
-              style:
-              textStyle.copyWith(color: textColor, fontSize: textSize),
+    return IgnorePointer(
+      ignoring: disabled,
+      child: AnimatedOpacity(
+        opacity: disabled ? disabledOpacity : 1.0,
+        curve: fastOutSlowIn,
+        duration: duration,
+        child: AnimatedContainer(
+          duration: duration,
+          height: height,
+          margin: margin,
+          curve: fastOutSlowIn,
+          width: width ?? MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: hasBorder ? borderColor : Colors.transparent,
+                width: hasBorder ? borderWidth : 0),
+            color: color,
+            boxShadow: boxShadow ?? [
+              BoxShadow(
+                  blurRadius: 10,
+                  color: hasShadow ? Colors.black38 : Colors.transparent)
+            ],
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(radius),
+            child: FlatButton(
+              highlightColor: highlightColor,
+              splashColor: splashColor,
+              padding: EdgeInsets.zero,
+              onPressed: isLoading ? null : onPressed,
+              child: Center(
+                child: isLoading
+                    ? spinner
+                    : child ?? Text(
+                  title,
+                  style:
+                  textStyle.copyWith(color: textColor, fontSize: textSize),
+                ),
+              ),
             ),
           ),
         ),
