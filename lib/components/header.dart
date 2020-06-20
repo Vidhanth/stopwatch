@@ -36,8 +36,6 @@ bool soundSettings = false;
 int intervalTone = 0;
 int specificTone = 0;
 
-
-
 class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -50,7 +48,7 @@ class Header extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: (){
+            onTap: () {
               toggleSettings(context);
             },
             child: Container(
@@ -246,7 +244,8 @@ class _SettingsState extends State<Settings> {
     setState(() {
       intervalTone = tone;
     });
-    intervalAudio.open(Audio("assets/audios/tone$tone.mp3"), playSpeed: getPlayBackSpeed(tone, 10));
+    intervalAudio.open(Audio("assets/audios/tone$tone.mp3"),
+        playSpeed: getPlayBackSpeed(tone, 10));
     playSounds(intervalAudio);
     await _prefs.setInt(intervalToneKey, intervalTone);
   }
@@ -255,7 +254,8 @@ class _SettingsState extends State<Settings> {
     setState(() {
       specificTone = tone;
     });
-    specificAudio.open(Audio("assets/audios/tone$tone.mp3"), playSpeed: getPlayBackSpeed(tone, 10));
+    specificAudio.open(Audio("assets/audios/tone$tone.mp3"),
+        playSpeed: getPlayBackSpeed(tone, 10));
     playSounds(specificAudio);
     await _prefs.setInt(specificToneKey, specificTone);
   }
@@ -326,7 +326,7 @@ class _SettingsState extends State<Settings> {
               children: <Widget>[
                 AnimatedDefaultTextStyle(
                   child: Container(
-                    height: 25,
+                    height: 30,
                     child: AutoSizeText(
                       "Interval Actions",
                     ),
@@ -356,207 +356,226 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  FittedBox(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 70,
-                              width: 80,
-                              child: TextFormField(
-                                controller: _intControllerHour,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  CustomRangeTextInputFormatter(),
-                                  WhitelistingTextInputFormatter.digitsOnly,
-                                ],
-                                onFieldSubmitted: (String hour) {
-                                  saveIntervalTime(intervalTime);
-                                },
-                                onChanged: (String hour) {
-                                  intervalTime[0] = getFormattedText(hour);
-                                },
-                                cursorColor: inactiveTextColor,
-                                maxLength: 2,
-                                scrollPhysics: BouncingScrollPhysics(),
-                                cursorRadius: Radius.circular(10),
-                                decoration: InputDecoration(
-                                    hintText: "00",
-                                    counterText: "",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero),
-                                style: poppinsBold.copyWith(
-                                    fontSize: 45, color: activeTextColor),
+                  Container(
+                    width:w,
+                    child: FittedBox(
+                      child: Row(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                height: 70,
+                                width: 80,
+                                alignment: Alignment.centerRight,
+                                child: TextFormField(
+                                  controller: _intControllerHour,
+                                  keyboardType: TextInputType.number,
+                                  onTap: (){
+                                    if(_intControllerHour.text == "00")
+                                      _intControllerHour.clear();
+                                  },
+                                  inputFormatters: [
+                                    CustomRangeTextInputFormatter(),
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  onFieldSubmitted: (String hour) {
+                                    saveIntervalTime(intervalTime);
+                                  },
+                                  onChanged: (String hour) {
+                                    intervalTime[0] = getFormattedText(hour);
+                                  },
+                                  cursorColor: inactiveTextColor,
+                                  maxLength: 2,
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  cursorRadius: Radius.circular(10),
+                                  decoration: InputDecoration(
+                                      hintText: "00",
+                                      counterText: "",
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.zero),
+                                  style: poppinsBold.copyWith(
+                                      fontSize: 45, color: activeTextColor),
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 30,
-                              child: PoppinsMedium(
-                                textColor: activeTextColor,
-                                textSize: 120,
-                                text: "hr",
+                              Container(
+                                height: 30,
+                                child: PoppinsMedium(
+                                  textColor: activeTextColor,
+                                  textSize: 120,
+                                  text: "hr",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 70,
-                              width: 80,
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  CustomRangeTextInputFormatter(),
-                                  WhitelistingTextInputFormatter.digitsOnly,
-                                ],
-                                controller: _intControllerMin,
-                                cursorColor: inactiveTextColor,
-                                onFieldSubmitted: (String min) {
-                                  saveIntervalTime(intervalTime);
-                                },
-                                onChanged: (String min) {
-                                  intervalTime[1] = getFormattedText(min);
-                                },
-                                maxLength: 2,
-                                scrollPhysics: BouncingScrollPhysics(),
-                                cursorRadius: Radius.circular(10),
-                                decoration: InputDecoration(
-                                    hintText: "00",
-                                    counterText: "",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero),
-                                style: poppinsBold.copyWith(
-                                    fontSize: 45, color: activeTextColor),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                height: 70,
+                                width: 80,
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    CustomRangeTextInputFormatter(),
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  controller: _intControllerMin,
+                                  cursorColor: inactiveTextColor,
+                                  onFieldSubmitted: (String min) {
+                                    saveIntervalTime(intervalTime);
+                                  },
+                                  onChanged: (String min) {
+                                    intervalTime[1] = getFormattedText(min);
+                                  },
+                                  maxLength: 2,
+                                  onTap: (){
+                                    if(_intControllerMin.text == "00")
+                                      _intControllerMin.clear();
+                                  },
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  cursorRadius: Radius.circular(10),
+                                  decoration: InputDecoration(
+                                      hintText: "00",
+                                      counterText: "",
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.zero),
+                                  style: poppinsBold.copyWith(
+                                      fontSize: 45, color: activeTextColor),
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 30,
-                              child: PoppinsMedium(
-                                textColor: activeTextColor,
-                                textSize: 120,
-                                text: "min",
+                              Container(
+                                height: 30,
+                                child: PoppinsMedium(
+                                  textColor: activeTextColor,
+                                  textSize: 120,
+                                  text: "min",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 70,
-                              width: 80,
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  CustomRangeTextInputFormatter(),
-                                  WhitelistingTextInputFormatter.digitsOnly,
-                                ],
-                                cursorColor: inactiveTextColor,
-                                maxLength: 2,
-                                scrollPhysics: BouncingScrollPhysics(),
-                                cursorRadius: Radius.circular(10),
-                                controller: _intControllerSec,
-                                onFieldSubmitted: (String sec) {
-                                  saveIntervalTime(intervalTime);
-                                },
-                                onChanged: (String sec) {
-                                  intervalTime[2] = getFormattedText(sec);
-                                },
-                                decoration: InputDecoration(
-                                    hintText: "00",
-                                    counterText: "",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero),
-                                style: poppinsBold.copyWith(
-                                    fontSize: 45, color: activeTextColor),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                height: 70,
+                                width: 80,
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    CustomRangeTextInputFormatter(),
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  cursorColor: inactiveTextColor,
+                                  maxLength: 2,
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  cursorRadius: Radius.circular(10),
+                                  controller: _intControllerSec,
+                                  onFieldSubmitted: (String sec) {
+                                    saveIntervalTime(intervalTime);
+                                  },
+                                  onChanged: (String sec) {
+                                    intervalTime[2] = getFormattedText(sec);
+                                  },
+                                  onTap: (){
+                                    if(_intControllerSec.text == "00")
+                                      _intControllerSec.clear();
+                                  },
+                                  decoration: InputDecoration(
+                                      hintText: "00",
+                                      counterText: "",
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.zero),
+                                  style: poppinsBold.copyWith(
+                                      fontSize: 45, color: activeTextColor),
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 30,
-                              child: PoppinsMedium(
-                                textColor: activeTextColor,
-                                textSize: 120,
-                                text: "sec",
+                              Container(
+                                height: 30,
+                                child: PoppinsMedium(
+                                  textColor: activeTextColor,
+                                  textSize: 120,
+                                  text: "sec",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  FittedBox(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            _toggleContainer(
-                                "Auto lap", toggleAutoLap, autoLap),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            _toggleContainer(
-                                "Play sound", togglePlaySound, playSound),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        CustomButton(
-                          duration: duration500,
-                          disabled: !playSound,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                  Container(
+                    width: w,
+                    child: FittedBox(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Row(
                             children: <Widget>[
-                              Icon(
-                                LineAwesomeIcons.cog,
-                                size: 20,
-                                color: soundSettings
-                                    ? Colors.grey[500]
-                                    : activeTextColor,
-                              ),
+                              _toggleContainer(
+                                  "Auto lap", toggleAutoLap, autoLap),
                               SizedBox(
-                                width: 5,
+                                width: 10,
                               ),
-                              Container(
-                                height: 20,
-                                child: PoppinsMedium(
-                                  text: "More",
-                                  textSize: 120,
-                                  textColor: soundSettings
+                              _toggleContainer(
+                                  "Play sound", togglePlaySound, playSound),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          CustomButton(
+                            duration: duration500,
+                            disabled: !playSound,
+                            margin: EdgeInsets.only(right: 00),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  LineAwesomeIcons.cog,
+                                  size: 20,
+                                  color: soundSettings
                                       ? Colors.grey[500]
                                       : activeTextColor,
                                 ),
-                              ),
-                            ],
-                          ),
-                          hasShadow: false,
-                          splashColor: Colors.transparent,
-                          onPressed: () {
-                            toggleSoundSettings();
-                          },
-                          color: soundSettings
-                              ? activeTextColor
-                              : Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          borderWidth: 1,
-                          hasBorder: soundSettings ? false : true,
-                          borderColor: activeTextColor,
-                          height: 40,
-                          width: 75,
-                        )
-                      ],
+                                Container(
+                                  margin: EdgeInsets.only(left: 5),
+                                  height: 20,
+                                  child: PoppinsMedium(
+                                    text: "More",
+                                    textSize: 120,
+                                    textColor: soundSettings
+                                        ? Colors.grey[500]
+                                        : activeTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            hasShadow: false,
+                            splashColor: Colors.transparent,
+                            onPressed: () {
+                              toggleSoundSettings();
+                            },
+                            color: soundSettings
+                                ? activeTextColor
+                                : Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            borderWidth: 1,
+                            hasBorder: soundSettings ? false : true,
+                            borderColor: activeTextColor,
+                            height: 40,
+                            width: 75,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -626,7 +645,7 @@ class _SettingsState extends State<Settings> {
               children: <Widget>[
                 AnimatedDefaultTextStyle(
                   child: Container(
-                    height: 25,
+                    height: 30,
                     child: AutoSizeText(
                       "Specific Time Actions",
                     ),
@@ -656,202 +675,220 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  FittedBox(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 70,
-                              width: 80,
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                controller: _speControllerHour,
-                                inputFormatters: [
-                                  WhitelistingTextInputFormatter.digitsOnly,
-                                  CustomRangeTextInputFormatter(),
-                                ],
-                                onFieldSubmitted: (String hour) {
-                                  saveSpecificTime(specificTime);
-                                },
-                                onChanged: (String hour) {
-                                  specificTime[0] = getFormattedText(hour);
-                                },
-                                cursorColor: inactiveTextColor,
-                                maxLength: 2,
-                                scrollPhysics: BouncingScrollPhysics(),
-                                cursorRadius: Radius.circular(10),
-                                decoration: InputDecoration(
-                                    hintText: "00",
-                                    counterText: "",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero),
-                                style: poppinsBold.copyWith(
-                                    fontSize: 45, color: activeTextColor),
+                  Container(
+                    width:w,
+                    child: FittedBox(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                height: 70,
+                                width: 80,
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  controller: _speControllerHour,
+                                  inputFormatters: [
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                    CustomRangeTextInputFormatter(),
+                                  ],
+                                  onFieldSubmitted: (String hour) {
+                                    saveSpecificTime(specificTime);
+                                  },
+                                  onChanged: (String hour) {
+                                    specificTime[0] = getFormattedText(hour);
+                                  },
+                                  cursorColor: inactiveTextColor,
+                                  maxLength: 2,
+                                  onTap: (){
+                                    if(_speControllerHour.text == "00")
+                                      _speControllerHour.clear();
+                                  },
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  cursorRadius: Radius.circular(10),
+                                  decoration: InputDecoration(
+                                      hintText: "00",
+                                      counterText: "",
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.zero),
+                                  style: poppinsBold.copyWith(
+                                      fontSize: 45, color: activeTextColor),
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 30,
-                              child: PoppinsMedium(
-                                textColor: activeTextColor,
-                                textSize: 120,
-                                text: "hr",
+                              Container(
+                                height: 30,
+                                child: PoppinsMedium(
+                                  textColor: activeTextColor,
+                                  textSize: 120,
+                                  text: "hr",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 70,
-                              width: 80,
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                controller: _speControllerMin,
-                                onFieldSubmitted: (String min) {
-                                  saveSpecificTime(specificTime);
-                                },
-                                onChanged: (String min) {
-                                  specificTime[1] = getFormattedText(min);
-                                },
-                                inputFormatters: [
-                                  CustomRangeTextInputFormatter(),
-                                  WhitelistingTextInputFormatter.digitsOnly,
-                                ],
-                                cursorColor: inactiveTextColor,
-                                maxLength: 2,
-                                scrollPhysics: BouncingScrollPhysics(),
-                                cursorRadius: Radius.circular(10),
-                                decoration: InputDecoration(
-                                    hintText: "00",
-                                    counterText: "",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero),
-                                style: poppinsBold.copyWith(
-                                    fontSize: 45, color: activeTextColor),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                height: 70,
+                                width: 80,
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  controller: _speControllerMin,
+                                  onFieldSubmitted: (String min) {
+                                    saveSpecificTime(specificTime);
+                                  },
+                                  onChanged: (String min) {
+                                    specificTime[1] = getFormattedText(min);
+                                  },
+                                  inputFormatters: [
+                                    CustomRangeTextInputFormatter(),
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  cursorColor: inactiveTextColor,
+                                  maxLength: 2,
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  onTap: (){
+                                    if(_speControllerMin.text == "00")
+                                      _speControllerMin.clear();
+                                  },
+                                  cursorRadius: Radius.circular(10),
+                                  decoration: InputDecoration(
+                                      hintText: "00",
+                                      counterText: "",
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.zero),
+                                  style: poppinsBold.copyWith(
+                                      fontSize: 45, color: activeTextColor),
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 30,
-                              child: PoppinsMedium(
-                                textColor: activeTextColor,
-                                textSize: 120,
-                                text: "min",
+                              Container(
+                                height: 30,
+                                child: PoppinsMedium(
+                                  textColor: activeTextColor,
+                                  textSize: 120,
+                                  text: "min",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              height: 70,
-                              width: 80,
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                controller: _speControllerSec,
-                                onFieldSubmitted: (String sec) {
-                                  saveSpecificTime(specificTime);
-                                },
-                                onChanged: (String sec) {
-                                  specificTime[2] = getFormattedText(sec);
-                                },
-                                inputFormatters: [
-                                  CustomRangeTextInputFormatter(),
-                                  WhitelistingTextInputFormatter.digitsOnly,
-                                ],
-                                cursorColor: inactiveTextColor,
-                                maxLength: 2,
-                                scrollPhysics: BouncingScrollPhysics(),
-                                cursorRadius: Radius.circular(10),
-                                decoration: InputDecoration(
-                                    hintText: "00",
-                                    counterText: "",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero),
-                                style: poppinsBold.copyWith(
-                                    fontSize: 45, color: activeTextColor),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                height: 70,
+                                width: 80,
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  controller: _speControllerSec,
+                                  onFieldSubmitted: (String sec) {
+                                    saveSpecificTime(specificTime);
+                                  },
+                                  onChanged: (String sec) {
+                                    specificTime[2] = getFormattedText(sec);
+                                  },
+                                  inputFormatters: [
+                                    CustomRangeTextInputFormatter(),
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  cursorColor: inactiveTextColor,
+                                  maxLength: 2,
+                                  onTap: (){
+                                    if(_speControllerSec.text == "00")
+                                      _speControllerSec.clear();
+                                  },
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  cursorRadius: Radius.circular(10),
+                                  decoration: InputDecoration(
+                                      hintText: "00",
+                                      counterText: "",
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.zero),
+                                  style: poppinsBold.copyWith(
+                                      fontSize: 45, color: activeTextColor),
+                                ),
                               ),
-                            ),
-                            Container(
-                              height: 30,
-                              child: PoppinsMedium(
-                                textColor: activeTextColor,
-                                textSize: 120,
-                                text: "sec",
+                              Container(
+                                height: 30,
+                                child: PoppinsMedium(
+                                  textColor: activeTextColor,
+                                  textSize: 120,
+                                  text: "sec",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  FittedBox(
-                    child: Row(
-                      children: <Widget>[
-                        _toggleContainer(
-                            "Speak time", toggleSpeakTime, speakTime),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        _toggleContainer("Play sound", toggleSpecificPlaySound,
-                            specificPlaySound),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        CustomButton(
-                          disabled: !specificPlaySound,
-                          duration: duration500,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(
-                                LineAwesomeIcons.cog,
-                                size: 20,
-                                color: specificSoundSettings
-                                    ? Colors.grey[500]
-                                    : activeTextColor,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Container(
-                                height: 20,
-                                child: PoppinsMedium(
-                                  text: "More",
-                                  textSize: 120,
-                                  textColor: specificSoundSettings
+                  Container(
+                    width: w,
+                    child: FittedBox(
+                      child: Row(
+                        children: <Widget>[
+                          _toggleContainer(
+                              "Speak time", toggleSpeakTime, speakTime),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          _toggleContainer("Play sound", toggleSpecificPlaySound,
+                              specificPlaySound),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          CustomButton(
+                            disabled: !specificPlaySound,
+                            duration: duration500,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Icon(
+                                  LineAwesomeIcons.cog,
+                                  size: 20,
+                                  color: specificSoundSettings
                                       ? Colors.grey[500]
                                       : activeTextColor,
                                 ),
-                              ),
-                            ],
-                          ),
-                          hasShadow: false,
-                          splashColor: Colors.transparent,
-                          onPressed: () {
-                            toggleSpecificSoundSettings();
-                          },
-                          color: specificSoundSettings
-                              ? activeTextColor
-                              : Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          borderWidth: 1,
-                          hasBorder: specificSoundSettings ? false : true,
-                          borderColor: activeTextColor,
-                          height: 40,
-                          width: 75,
-                        )
-                      ],
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Container(
+                                  height: 20,
+                                  child: PoppinsMedium(
+                                    text: "More",
+                                    textSize: 120,
+                                    textColor: specificSoundSettings
+                                        ? Colors.grey[500]
+                                        : activeTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            hasShadow: false,
+                            splashColor: Colors.transparent,
+                            onPressed: () {
+                              toggleSpecificSoundSettings();
+                            },
+                            color: specificSoundSettings
+                                ? activeTextColor
+                                : Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            borderWidth: 1,
+                            hasBorder: specificSoundSettings ? false : true,
+                            borderColor: activeTextColor,
+                            height: 40,
+                            width: 75,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   AnimatedOpacity(
@@ -912,21 +949,24 @@ class _SettingsState extends State<Settings> {
                       ),
                     ),
                   ),
-                  FittedBox(
-                    child: Row(
-                      children: <Widget>[
-                        _toggleContainer(
-                            "Lap time", toggleSpecificAutoLap, specificAutoLap),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        _toggleContainer("Stop timer", toggleSpecificStopClock,
-                            specificStopClock),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        _toggleContainer(" ", () {}, false),
-                      ],
+                  Container(
+                    width: w,
+                    child: FittedBox(
+                      child: Row(
+                        children: <Widget>[
+                          _toggleContainer(
+                              "Lap time", toggleSpecificAutoLap, specificAutoLap),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          _toggleContainer("Stop timer", toggleSpecificStopClock,
+                              specificStopClock),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          _toggleContainer(" ", () {}, false),
+                        ],
+                      ),
                     ),
                   )
                 ],
@@ -947,6 +987,7 @@ class _SettingsState extends State<Settings> {
         height: name.trim().isEmpty ? 0 : 40,
         width: name.trim().isEmpty ? 75 : 130,
         alignment: Alignment.center,
+        padding: EdgeInsets.all(5),
         duration: duration400,
         curve: fastOutSlowIn,
         decoration: BoxDecoration(
@@ -957,12 +998,10 @@ class _SettingsState extends State<Settings> {
           ),
         ),
         child: FittedBox(
-          child: AnimatedDefaultTextStyle(
-            duration: duration300,
-            child: Text(name),
-            style: poppinsMedium.copyWith(
-              color: selected ? Colors.white60 : activeTextColor,
-            ),
+          child: PoppinsMedium(
+            text: name,
+            textSize: 120,
+            textColor: selected ? Colors.grey[500] : activeTextColor,
           ),
         ),
       ),
