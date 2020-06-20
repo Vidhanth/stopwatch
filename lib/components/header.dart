@@ -421,7 +421,7 @@ class _SettingsState extends State<Settings> {
                                   },
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
-                                  scrollPhysics: BouncingScrollPhysics(),
+                                  scrollPhysics: bouncePhysics,
                                   cursorRadius: Radius.circular(10),
                                   decoration: InputDecoration(
                                       hintText: "00",
@@ -468,7 +468,7 @@ class _SettingsState extends State<Settings> {
                                   onTap: () {
                                     handleOnTap(_intControllerMin);
                                   },
-                                  scrollPhysics: BouncingScrollPhysics(),
+                                  scrollPhysics: bouncePhysics,
                                   cursorRadius: Radius.circular(10),
                                   decoration: InputDecoration(
                                       hintText: "00",
@@ -505,7 +505,7 @@ class _SettingsState extends State<Settings> {
                                   ],
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
-                                  scrollPhysics: BouncingScrollPhysics(),
+                                  scrollPhysics: bouncePhysics,
                                   cursorRadius: Radius.circular(10),
                                   controller: _intControllerSec,
                                   onFieldSubmitted: (String sec) {
@@ -541,7 +541,7 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                   SizedBox(
-                    height: 5,
+                    height: 10,
                   ),
                   Container(
                     width: w,
@@ -644,7 +644,7 @@ class _SettingsState extends State<Settings> {
                           duration: duration200,
                           curve: fastOutSlowIn,
                           child: SingleChildScrollView(
-                            physics: BouncingScrollPhysics(),
+                            physics: bouncePhysics,
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: List.generate(
@@ -737,7 +737,7 @@ class _SettingsState extends State<Settings> {
                                   onTap: () {
                                     handleOnTap(_speControllerHour);
                                   },
-                                  scrollPhysics: BouncingScrollPhysics(),
+                                  scrollPhysics: bouncePhysics,
                                   cursorRadius: Radius.circular(10),
                                   decoration: InputDecoration(
                                       hintText: "00",
@@ -781,7 +781,7 @@ class _SettingsState extends State<Settings> {
                                   ],
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
-                                  scrollPhysics: BouncingScrollPhysics(),
+                                  scrollPhysics: bouncePhysics,
                                   onTap: () {
                                     handleOnTap(_speControllerMin);
                                   },
@@ -831,7 +831,7 @@ class _SettingsState extends State<Settings> {
                                   onTap: () {
                                     handleOnTap(_speControllerSec);
                                   },
-                                  scrollPhysics: BouncingScrollPhysics(),
+                                  scrollPhysics: bouncePhysics,
                                   cursorRadius: Radius.circular(10),
                                   decoration: InputDecoration(
                                       hintText: "00",
@@ -857,7 +857,7 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                   SizedBox(
-                    height: 5,
+                    height: 10,
                   ),
                   Container(
                     width: w,
@@ -956,7 +956,7 @@ class _SettingsState extends State<Settings> {
                             duration: duration200,
                             curve: fastOutSlowIn,
                             child: SingleChildScrollView(
-                              physics: BouncingScrollPhysics(),
+                              physics: bouncePhysics,
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: List.generate(

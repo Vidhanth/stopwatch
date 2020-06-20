@@ -11,6 +11,7 @@ Color primaryTextColor = Colors.grey[400];
 AssetsAudioPlayer intervalAudio = AssetsAudioPlayer();
 AssetsAudioPlayer specificAudio = AssetsAudioPlayer();
 
+const ScrollPhysics bouncePhysics = BouncingScrollPhysics();
 
 //Keys
 final String playSoundKey = "psk";
