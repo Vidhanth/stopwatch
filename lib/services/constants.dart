@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 
 //Colors
 Color bgColor = Color(0xff15181b);
+Color buttonBgColor = Colors.grey[300];
+Color buttonIconColor = Colors.black54;
 Color whiteShadow = Colors.white.withOpacity(0.07);
 Color blackShadow = Colors.black.withOpacity(0.45);
-Color primaryTextColor = Colors.grey[400];
+Color primaryTextColor = Colors.grey[300];
 
 
 AssetsAudioPlayer intervalAudio = AssetsAudioPlayer();

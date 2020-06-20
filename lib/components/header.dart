@@ -57,36 +57,34 @@ class Header extends StatelessWidget {
                 text: "Stopwatch",
                 textSize: 130,
                 textAlign: TextAlign.start,
-                textColor: primaryTextColor,
+                textColor: Colors.white,
               ),
             ),
           ),
-          CustomButton(
-            height: w * 0.15,
-            width: w * 0.15,
-            duration: duration200,
-            color: bgColor,
-            radius: 30,
-            highlightColor: Colors.transparent,
-            splashColor: Colors.white10,
-            boxShadow: [
-              BoxShadow(
-                color: whiteShadow,
-                blurRadius: 7,
-                offset: Offset(0, -2),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 10,
+                sigmaY: 10,
               ),
-              BoxShadow(
-                color: blackShadow,
-                blurRadius: 10,
-                offset: Offset(0, 5),
+              child: CustomButton(
+                height: w * 0.15,
+                width: w * 0.15,
+                duration: duration200,
+                color: bgColor.withOpacity(0.3),
+                radius: 30,
+                highlightColor: Colors.transparent,
+                splashColor: Colors.black12,
+                hasShadow: false,
+                onPressed: () {
+                  toggleSettings(context);
+                },
+                child: Icon(
+                  LineAwesomeIcons.cog,
+                  color: primaryTextColor,
+                ),
               ),
-            ],
-            onPressed: () {
-              toggleSettings(context);
-            },
-            child: Icon(
-              LineAwesomeIcons.cog,
-              color: primaryTextColor,
             ),
           ),
         ],

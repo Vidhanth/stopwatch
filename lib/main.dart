@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +13,7 @@ import 'package:stopwatch/models/stopwatch.dart';
 import 'package:stopwatch/models/laps.dart';
 import 'components/header.dart';
 import 'components/clock.dart';
+import 'package:image_fade/image_fade.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,6 +22,8 @@ void main() {
 double h = 0;
 double w = 0;
 int screenRatio = 16 ~/ 9;
+int image = 0;
+int maxImages = 5;
 
 class MyApp extends StatefulWidget {
   @override
@@ -31,6 +36,7 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     initializePrefs();
+    image = Random().nextInt(maxImages);
     super.initState();
   }
 
@@ -122,10 +128,16 @@ class Home extends StatelessWidget {
       onWillPop: (){
         return hideSettings(context);
       },
-      child: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            Column(
+      child: Stack(
+        children: <Widget>[
+          Positioned.fill(
+            child: ImageFade(
+              image: AssetImage("assets/images/bg$image.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          SafeArea(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Header(),
@@ -168,16 +180,16 @@ class Home extends StatelessWidget {
                 StopWatchControls()
               ],
             ),
-            Consumer<ShowSettings>(
-              builder: (_, _showSettings, __) => AnimatedPositioned(
-                curve: fastOutSlowIn,
-                bottom: _showSettings.showSettings ? 0 : -700,
-                duration: duration600,
-                child: Settings(),
-              ),
-            )
-          ],
-        ),
+          ),
+          Consumer<ShowSettings>(
+            builder: (_, _showSettings, __) => AnimatedPositioned(
+              curve: fastOutSlowIn,
+              bottom: _showSettings.showSettings ? 0 : -700,
+              duration: duration600,
+              child: Settings(),
+            ),
+          )
+        ],
       ),
     );
   }

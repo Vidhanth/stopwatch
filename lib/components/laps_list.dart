@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stopwatch/services/poppins_text.dart';
@@ -28,7 +30,7 @@ class LapsList extends StatelessWidget {
           height: 4,
           width: laps.lapsList.isEmpty ? 0 : w,
           decoration: BoxDecoration(
-              color: Color(0xff0e1113),
+              color: Colors.black.withOpacity(0.6),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -67,62 +69,57 @@ class LapsListItem extends StatelessWidget {
       duration: duration400,
       child: Container(
         height: screenRatio != normalRatio ? h * 0.1 : h * 0.12,
+        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+        margin: EdgeInsets.symmetric(horizontal: 20),
         width: w,
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          height: 70,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: bgColor,
-            boxShadow: [
-              BoxShadow(
-                color: whiteShadow,
-                blurRadius: 10,
-                offset: Offset(-0, -5),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaY: 20, sigmaX: 20),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              height: 70,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.black12,
               ),
-              BoxShadow(
-                color: blackShadow,
-                blurRadius: 10,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        height: 40,
+                        width: index+1 < 10 ? 30 : (index+1).toString().length*15.toDouble(),
+                        child: PoppinsBold(
+                          text: (index + 1).toString(),
+                          textColor: primaryTextColor,
+                          textSize: 120,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                          height: 30,
+                          child: PoppinsRegular(
+                            text: "Lap",
+                            textSize: 120,
+                            textColor: primaryTextColor,
+                          )),
+                    ],
+                  ),
                   Container(
-                    height: 40,
-                    width: index+1 < 10 ? 30 : (index+1).toString().length*15.toDouble(),
+                    height: 20,
                     child: PoppinsBold(
-                      text: (index + 1).toString(),
+                      text: laps.lapsList[index],
                       textColor: primaryTextColor,
                       textSize: 120,
                     ),
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                      height: 30,
-                      child: PoppinsRegular(
-                        text: "Lap",
-                        textSize: 120,
-                        textColor: primaryTextColor,
-                      )),
                 ],
               ),
-              Container(
-                height: 20,
-                child: PoppinsBold(
-                  text: laps.lapsList[index],
-                  textColor: primaryTextColor,
-                  textSize: 120,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

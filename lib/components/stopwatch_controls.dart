@@ -32,7 +32,7 @@ class StopWatchControls extends StatelessWidget {
               height: w * 0.15,
               width: w * 0.15,
               duration: duration200,
-              color: bgColor,
+              color: buttonBgColor,
               radius: 15,
               highlightColor: Colors.transparent,
               splashColor:
@@ -56,7 +56,7 @@ class StopWatchControls extends StatelessWidget {
               },
               child: Icon(
                 LineAwesomeIcons.stop,
-                color: primaryTextColor,
+                color: buttonIconColor,
               ),
             ),
           ),
@@ -66,7 +66,7 @@ class StopWatchControls extends StatelessWidget {
             width:  stopwatch.wasReset ? 0 : 30, duration: duration400,
           ),
           CustomButton(
-            color: bgColor,
+            color: buttonBgColor,
             splashColor: whiteShadow,
             highlightColor: Colors.transparent,
             height: w * 0.15,
@@ -92,7 +92,7 @@ class StopWatchControls extends StatelessWidget {
               stopwatch.isTimerRunning
                   ? LineAwesomeIcons.pause
                   : LineAwesomeIcons.play,
-              color: primaryTextColor,
+              color: buttonIconColor,
             ),
           ),
           AnimatedContainer(
@@ -107,7 +107,7 @@ class StopWatchControls extends StatelessWidget {
               height: w * 0.15,
               width: w * 0.15,
               duration: duration200,
-              color: bgColor,
+              color: buttonBgColor,
               radius: 15,
               highlightColor: Colors.transparent,
               splashColor: whiteShadow,
@@ -128,7 +128,7 @@ class StopWatchControls extends StatelessWidget {
               },
               child: Icon(
                 LineAwesomeIcons.hourglass,
-                color: primaryTextColor,
+                color: buttonIconColor,
               ),
             ),
           ),
