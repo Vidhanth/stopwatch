@@ -104,8 +104,25 @@ void toggleSettings(BuildContext context) {
   }
   if (specificSoundSettings) specificSoundSettings = false;
   if (soundSettings) soundSettings = false;
+
+  if(noIntervalActions()){
+    intervalActions = false;
+  }
+
+  if(noSpecificActions()){
+    specificActions = false;
+  }
+
   settings.showSettings = !settings.showSettings;
   if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
+}
+
+bool noSpecificActions() {
+  return (!speakTime && !specificPlaySound && !specificAutoLap && !specificStopClock );
+}
+
+bool noIntervalActions() {
+  return (!autoLap && !playSound);
 }
 
 void initializePrefs() async {
@@ -123,19 +140,23 @@ void initializePrefs() async {
   autoLap = _prefs.getBool(autoLapKey);
   specificStopClock = _prefs.getBool(stopClockKey);
   speakTime = _prefs.getBool(speakTimeKey);
-  _intControllerHour = TextEditingController(text: intervalTime[0]);
-  _intControllerMin = TextEditingController(text: intervalTime[1]);
-  _intControllerSec = TextEditingController(text: intervalTime[2]);
-  _speControllerHour = TextEditingController(text: specificTime[0]);
-  _speControllerMin = TextEditingController(text: specificTime[1]);
-  _speControllerSec = TextEditingController(text: specificTime[2]);
+  _intControllerHour = TextEditingController(text: getText(intervalTime[0]));
+  _intControllerMin = TextEditingController(text: getText(intervalTime[1]));
+  _intControllerSec = TextEditingController(text: getText(intervalTime[2]));
+  _speControllerHour = TextEditingController(text: getText(specificTime[0]));
+  _speControllerMin = TextEditingController(text: getText(specificTime[1]));
+  _speControllerSec = TextEditingController(text: getText(specificTime[2]));
   initialized = true;
 }
 
+String getText(String text) {
+  if(int.parse(text)==0)
+    return "";
+  return text;
+}
+
 saveIntervalTime(List<String> newTime) async {
-  _intControllerHour.text = intervalTime[0];
-  _intControllerMin.text = intervalTime[1];
-  _intControllerSec.text = intervalTime[2];
+  setTime();
   if (intervalTime.toString() == "[00, 00, 00]") {
     intervalActions = false;
     await _prefs.setBool(intervalActionsKey, intervalActions);
@@ -148,10 +169,16 @@ saveIntervalTime(List<String> newTime) async {
 }
 
 saveSpecificTime(List<String> newTime) async {
-  _speControllerHour.text = specificTime[0];
-  _speControllerMin.text = specificTime[1];
-  _speControllerSec.text = specificTime[2];
+  setTime();
   print(specificTime);
+  if (intervalTime.toString() == "[00, 00, 00]") {
+    intervalActions = false;
+    await _prefs.setBool(intervalActionsKey, intervalActions);
+  }
+  if (specificTime.toString() == "[00, 00, 00]") {
+    specificActions = false;
+    await _prefs.setBool(specificActionsKey, specificActions);
+  }
   await _prefs.setStringList(specificTimeKey, newTime);
 }
 
@@ -179,7 +206,10 @@ class _SettingsState extends State<Settings> {
   }
 
   toggleIntervalActions() async {
-    if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+      setTime();
+    }
     setState(() {
       intervalActions = !intervalActions;
       if (soundSettings) soundSettings = false;
@@ -195,7 +225,10 @@ class _SettingsState extends State<Settings> {
   }
 
   toggleSpecificActions() async {
-    if (FocusScope.of(context).hasFocus) FocusScope.of(context).unfocus();
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+      setTime();
+    }
     setState(() {
       specificActions = !specificActions;
       if (specificSoundSettings) specificSoundSettings = false;
@@ -294,27 +327,30 @@ class _SettingsState extends State<Settings> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            height: 50,
+            height: 55,
             margin: EdgeInsets.only(bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                PoppinsBold(
-                  text: "Settings",
-                  textColor: activeTextColor,
-                  textSize: 120,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    toggleSettings(context);
-                  },
-                  child: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: activeTextColor,
-                    size: 30,
+            child: GestureDetector(
+              onTap: () {
+                toggleSettings(context);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  PoppinsBold(
+                    text: "Settings",
+                    textColor: activeTextColor,
+                    textSize: 120,
                   ),
-                )
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: activeTextColor,
+                      size: 40,
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           GestureDetector(
@@ -357,7 +393,7 @@ class _SettingsState extends State<Settings> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Container(
-                    width:w,
+                    width: w,
                     child: FittedBox(
                       child: Row(
                         children: <Widget>[
@@ -370,9 +406,8 @@ class _SettingsState extends State<Settings> {
                                 child: TextFormField(
                                   controller: _intControllerHour,
                                   keyboardType: TextInputType.number,
-                                  onTap: (){
-                                    if(_intControllerHour.text == "00")
-                                      _intControllerHour.clear();
+                                  onTap: () {
+                                    handleOnTap(_intControllerHour);
                                   },
                                   inputFormatters: [
                                     CustomRangeTextInputFormatter(),
@@ -430,9 +465,8 @@ class _SettingsState extends State<Settings> {
                                     intervalTime[1] = getFormattedText(min);
                                   },
                                   maxLength: 2,
-                                  onTap: (){
-                                    if(_intControllerMin.text == "00")
-                                      _intControllerMin.clear();
+                                  onTap: () {
+                                    handleOnTap(_intControllerMin);
                                   },
                                   scrollPhysics: BouncingScrollPhysics(),
                                   cursorRadius: Radius.circular(10),
@@ -480,9 +514,8 @@ class _SettingsState extends State<Settings> {
                                   onChanged: (String sec) {
                                     intervalTime[2] = getFormattedText(sec);
                                   },
-                                  onTap: (){
-                                    if(_intControllerSec.text == "00")
-                                      _intControllerSec.clear();
+                                  onTap: () {
+                                    handleOnTap(_intControllerSec);
                                   },
                                   decoration: InputDecoration(
                                       hintText: "00",
@@ -508,7 +541,7 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 5,
                   ),
                   Container(
                     width: w,
@@ -676,7 +709,7 @@ class _SettingsState extends State<Settings> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Container(
-                    width:w,
+                    width: w,
                     child: FittedBox(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -701,9 +734,8 @@ class _SettingsState extends State<Settings> {
                                   },
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
-                                  onTap: (){
-                                    if(_speControllerHour.text == "00")
-                                      _speControllerHour.clear();
+                                  onTap: () {
+                                    handleOnTap(_speControllerHour);
                                   },
                                   scrollPhysics: BouncingScrollPhysics(),
                                   cursorRadius: Radius.circular(10),
@@ -750,9 +782,8 @@ class _SettingsState extends State<Settings> {
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
                                   scrollPhysics: BouncingScrollPhysics(),
-                                  onTap: (){
-                                    if(_speControllerMin.text == "00")
-                                      _speControllerMin.clear();
+                                  onTap: () {
+                                    handleOnTap(_speControllerMin);
                                   },
                                   cursorRadius: Radius.circular(10),
                                   decoration: InputDecoration(
@@ -797,9 +828,8 @@ class _SettingsState extends State<Settings> {
                                   ],
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
-                                  onTap: (){
-                                    if(_speControllerSec.text == "00")
-                                      _speControllerSec.clear();
+                                  onTap: () {
+                                    handleOnTap(_speControllerSec);
                                   },
                                   scrollPhysics: BouncingScrollPhysics(),
                                   cursorRadius: Radius.circular(10),
@@ -827,7 +857,7 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 5,
                   ),
                   Container(
                     width: w,
@@ -839,8 +869,8 @@ class _SettingsState extends State<Settings> {
                           SizedBox(
                             width: 10,
                           ),
-                          _toggleContainer("Play sound", toggleSpecificPlaySound,
-                              specificPlaySound),
+                          _toggleContainer("Play sound",
+                              toggleSpecificPlaySound, specificPlaySound),
                           SizedBox(
                             width: 10,
                           ),
@@ -954,13 +984,13 @@ class _SettingsState extends State<Settings> {
                     child: FittedBox(
                       child: Row(
                         children: <Widget>[
-                          _toggleContainer(
-                              "Lap time", toggleSpecificAutoLap, specificAutoLap),
+                          _toggleContainer("Lap time", toggleSpecificAutoLap,
+                              specificAutoLap),
                           SizedBox(
                             width: 10,
                           ),
-                          _toggleContainer("Stop timer", toggleSpecificStopClock,
-                              specificStopClock),
+                          _toggleContainer("Stop timer",
+                              toggleSpecificStopClock, specificStopClock),
                           SizedBox(
                             width: 10,
                           ),
@@ -987,7 +1017,7 @@ class _SettingsState extends State<Settings> {
         height: name.trim().isEmpty ? 0 : 40,
         width: name.trim().isEmpty ? 75 : 130,
         alignment: Alignment.center,
-        padding: EdgeInsets.all(5),
+        padding: EdgeInsets.all(7),
         duration: duration400,
         curve: fastOutSlowIn,
         decoration: BoxDecoration(
@@ -1007,6 +1037,26 @@ class _SettingsState extends State<Settings> {
       ),
     );
   }
+}
+
+void handleOnTap(TextEditingController controller) {
+  setTime();
+  if (controller.text.isNotEmpty) {
+    if (controller.text == "00")
+      controller.clear();
+    else if (int.parse(controller.text) < 10) {
+      controller.text = controller.text.replaceAll("0", "");
+    }
+  }
+}
+
+setTime(){
+  _intControllerHour.text = getText(intervalTime[0]);
+  _intControllerMin.text = getText(intervalTime[1]);
+  _intControllerSec.text = getText(intervalTime[2]);
+  _speControllerHour.text = getText(specificTime[0]);
+  _speControllerMin.text = getText(specificTime[1]);
+  _speControllerSec.text = getText(specificTime[2]);
 }
 
 String getFormattedText(String text) {
