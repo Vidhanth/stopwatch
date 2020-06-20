@@ -1011,6 +1011,10 @@ class _SettingsState extends State<Settings> {
   Widget _toggleContainer(String name, Function onPressed, bool selected) {
     return GestureDetector(
       onTap: () {
+        if(FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+          setTime();
+        }
         onPressed();
       },
       child: AnimatedContainer(
