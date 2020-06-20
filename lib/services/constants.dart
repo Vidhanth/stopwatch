@@ -44,6 +44,23 @@ ScrollController lapsController = ScrollController();
 
 //Other Constants
 final int maxTones = 6;
+List<String> urls = [
+  "https://unsplash.com/photos/PVJkLgchfxg/download?force=true",
+  "https://unsplash.com/photos/4GVe6DC-ADA/download?force=true",
+  "https://unsplash.com/photos/lUO-BjCiZEA/download?force=true",
+  "https://unsplash.com/photos/aUKJG9l-wks/download?force=true",
+  "https://unsplash.com/photos/Hyu76loQLdk/download?force=true",
+  "https://unsplash.com/photos/2PgWjPc_c_0/download?force=true",
+];
+
+List<String> hashes = [
+  "L184e}H=00~qrWtR%NRP01NH^*V[",
+  "N99sGDXT0JIn-pt7~DxbE1I.t6oe0{,@-WNaIoay",
+  "LDB.Jx0h}rIq^55m\$gkC0\$^OIpxt",
+  "LcCH4-M{S\$WXu6ofofofIpt7n\$js",
+  "LHKISF?^=|x]=|1Ka1r?I9:*aJNG",
+  "LAJqsM1c0N=e2@;O1b}Y0N1v-n}E"
+];
 
 //Curves
 const Curve fastOutSlowIn = Curves.fastOutSlowIn;

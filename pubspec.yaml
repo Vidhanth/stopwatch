@@ -33,6 +33,8 @@ dependencies:
   flutter_launcher_icons:
   assets_audio_player:
   image_fade:
+  cached_network_image: ^2.2.0+1
+  flutter_blurhash:
   shared_preferences:
   flutter_tts:
   auto_size_text:

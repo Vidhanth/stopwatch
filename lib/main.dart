@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +14,7 @@ import 'package:stopwatch/models/laps.dart';
 import 'components/header.dart';
 import 'components/clock.dart';
 import 'package:image_fade/image_fade.dart';
+import 'package:flutter_blurhash/flutter_blurhash.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,7 +24,7 @@ double h = 0;
 double w = 0;
 int screenRatio = 16 ~/ 9;
 int image = 0;
-int maxImages = 5;
+int maxImages = 6;
 
 class MyApp extends StatefulWidget {
   @override
@@ -132,7 +133,8 @@ class Home extends StatelessWidget {
         children: <Widget>[
           Positioned.fill(
             child: ImageFade(
-              image: AssetImage("assets/images/bg$image.jpg"),
+              image: CachedNetworkImageProvider(urls[image],),
+              placeholder: BlurHash(hash: hashes[image], imageFit: BoxFit.cover,),
               fit: BoxFit.cover,
             ),
           ),
