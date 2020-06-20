@@ -32,6 +32,7 @@ dependencies:
   wakelock:
   flutter_launcher_icons:
   assets_audio_player:
+  image_fade:
   shared_preferences:
   flutter_tts:
   auto_size_text:
