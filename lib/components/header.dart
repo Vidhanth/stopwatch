@@ -1,7 +1,5 @@
-import 'dart:ui';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -105,11 +103,11 @@ void toggleSettings(BuildContext context) {
   if (specificSoundSettings) specificSoundSettings = false;
   if (soundSettings) soundSettings = false;
 
-  if(noIntervalActions()){
+  if (noIntervalActions()) {
     intervalActions = false;
   }
 
-  if(noSpecificActions()){
+  if (noSpecificActions()) {
     specificActions = false;
   }
 
@@ -118,7 +116,10 @@ void toggleSettings(BuildContext context) {
 }
 
 bool noSpecificActions() {
-  return (!speakTime && !specificPlaySound && !specificAutoLap && !specificStopClock );
+  return (!speakTime &&
+      !specificPlaySound &&
+      !specificAutoLap &&
+      !specificStopClock);
 }
 
 bool noIntervalActions() {
@@ -150,8 +151,7 @@ void initializePrefs() async {
 }
 
 String getText(String text) {
-  if(int.parse(text)==0)
-    return "";
+  if (int.parse(text) == 0) return "";
   return text;
 }
 
@@ -411,7 +411,6 @@ class _SettingsState extends State<Settings> {
                                   },
                                   inputFormatters: [
                                     CustomRangeTextInputFormatter(),
-                                    WhitelistingTextInputFormatter.digitsOnly,
                                   ],
                                   onFieldSubmitted: (String hour) {
                                     saveIntervalTime(intervalTime);
@@ -454,7 +453,7 @@ class _SettingsState extends State<Settings> {
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     CustomRangeTextInputFormatter(),
-                                    WhitelistingTextInputFormatter.digitsOnly,
+                                    FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   controller: _intControllerMin,
                                   cursorColor: inactiveTextColor,
@@ -501,7 +500,7 @@ class _SettingsState extends State<Settings> {
                                   keyboardType: TextInputType.number,
                                   inputFormatters: [
                                     CustomRangeTextInputFormatter(),
-                                    WhitelistingTextInputFormatter.digitsOnly,
+                                    FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
@@ -723,7 +722,7 @@ class _SettingsState extends State<Settings> {
                                   keyboardType: TextInputType.number,
                                   controller: _speControllerHour,
                                   inputFormatters: [
-                                    WhitelistingTextInputFormatter.digitsOnly,
+                                    FilteringTextInputFormatter.digitsOnly,
                                     CustomRangeTextInputFormatter(),
                                   ],
                                   onFieldSubmitted: (String hour) {
@@ -777,7 +776,7 @@ class _SettingsState extends State<Settings> {
                                   },
                                   inputFormatters: [
                                     CustomRangeTextInputFormatter(),
-                                    WhitelistingTextInputFormatter.digitsOnly,
+                                    FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
@@ -824,7 +823,7 @@ class _SettingsState extends State<Settings> {
                                   },
                                   inputFormatters: [
                                     CustomRangeTextInputFormatter(),
-                                    WhitelistingTextInputFormatter.digitsOnly,
+                                    FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   cursorColor: inactiveTextColor,
                                   maxLength: 2,
@@ -1011,7 +1010,7 @@ class _SettingsState extends State<Settings> {
   Widget _toggleContainer(String name, Function onPressed, bool selected) {
     return GestureDetector(
       onTap: () {
-        if(FocusScope.of(context).hasFocus) {
+        if (FocusScope.of(context).hasFocus) {
           FocusScope.of(context).unfocus();
           setTime();
         }
@@ -1054,7 +1053,7 @@ void handleOnTap(TextEditingController controller) {
   }
 }
 
-setTime(){
+setTime() {
   _intControllerHour.text = getText(intervalTime[0]);
   _intControllerMin.text = getText(intervalTime[1]);
   _intControllerSec.text = getText(intervalTime[2]);

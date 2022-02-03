@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stopwatch/services/poppins_text.dart';
 
-
+// ignore: must_be_immutable
 class Clock extends StatelessWidget {
-
   final Offset whiteOffset = Offset(-0, -10);
   final Offset blackOffset = Offset(0, 10);
   final double clockTextSize = 70;
@@ -14,11 +13,7 @@ class Clock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (w == null)
-      w = MediaQuery
-          .of(context)
-          .size
-          .width;
+    if (w == null) w = MediaQuery.of(context).size.width;
 
     return Column(
       children: <Widget>[

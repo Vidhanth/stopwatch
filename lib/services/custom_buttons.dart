@@ -75,28 +75,28 @@ class CustomButton extends StatelessWidget {
                 color: hasBorder ? borderColor : Colors.transparent,
                 width: hasBorder ? borderWidth : 0),
             color: color,
-            boxShadow: boxShadow ?? [
-              BoxShadow(
-                  blurRadius: 10,
-                  color: hasShadow ? Colors.black38 : Colors.transparent)
-            ],
+            boxShadow: boxShadow ??
+                [
+                  BoxShadow(
+                      blurRadius: 10,
+                      color: hasShadow ? Colors.black38 : Colors.transparent)
+                ],
             borderRadius: BorderRadius.circular(radius),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(radius),
-            child: FlatButton(
-              highlightColor: highlightColor,
-              splashColor: splashColor,
-              padding: EdgeInsets.zero,
+            child: TextButton(
+              style: TextButton.styleFrom(padding: EdgeInsets.zero),
               onPressed: isLoading ? null : onPressed,
               child: Center(
                 child: isLoading
                     ? spinner
-                    : child ?? Text(
-                  title,
-                  style:
-                  textStyle.copyWith(color: textColor, fontSize: textSize),
-                ),
+                    : child ??
+                        Text(
+                          title,
+                          style: textStyle.copyWith(
+                              color: textColor, fontSize: textSize),
+                        ),
               ),
             ),
           ),
