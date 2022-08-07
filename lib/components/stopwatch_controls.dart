@@ -7,14 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:stopwatch/services/custom_buttons.dart';
 import 'package:wakelock/wakelock.dart';
 
-
 BuildContext _context;
 
 class StopWatchControls extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-
     _context = context;
     StopWatch stopwatch = Provider.of<StopWatch>(context);
     double w = MediaQuery.of(context).size.width;
@@ -35,8 +32,9 @@ class StopWatchControls extends StatelessWidget {
               color: buttonBgColor,
               radius: 15,
               highlightColor: Colors.transparent,
-              splashColor:
-              stopwatch.wasReset ? Colors.transparent : Colors.red.withOpacity(0.3),
+              splashColor: stopwatch.wasReset
+                  ? Colors.transparent
+                  : Colors.red.withOpacity(0.3),
               boxShadow: [
                 BoxShadow(
                   color: whiteShadow,
@@ -63,7 +61,8 @@ class StopWatchControls extends StatelessWidget {
           AnimatedContainer(
             height: 30,
             curve: fastOutSlowIn,
-            width:  stopwatch.wasReset ? 0 : 30, duration: duration400,
+            width: stopwatch.wasReset ? 0 : 30,
+            duration: duration400,
           ),
           CustomButton(
             color: buttonBgColor,
@@ -98,7 +97,8 @@ class StopWatchControls extends StatelessWidget {
           AnimatedContainer(
             height: 30,
             curve: fastOutSlowIn,
-            width: stopwatch.wasReset ? 0 : 30, duration: duration400,
+            width: stopwatch.wasReset ? 0 : 30,
+            duration: duration400,
           ),
           AnimatedOpacity(
             duration: duration300,
@@ -139,26 +139,22 @@ class StopWatchControls extends StatelessWidget {
 }
 
 void startStopwatch(BuildContext context) {
-
   final StopWatch stopwatch = Provider.of<StopWatch>(context, listen: false);
-  if (stopwatch.isTimerRunning){
+  if (stopwatch.isTimerRunning) {
     stopwatch.stop();
     Wakelock.disable();
-  } else{
+  } else {
     stopwatch.start();
     Wakelock.enable();
   }
-
 }
 
 BuildContext get getContext => _context;
 
 void resetStopwatch(BuildContext context) {
-
   Provider.of<StopWatch>(context, listen: false).reset();
   Wakelock.disable();
   resetLaps(context);
-
 }
 
 addLap(BuildContext context) {

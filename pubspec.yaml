@@ -31,9 +31,9 @@ dependencies:
   line_awesome_icons:
   wakelock:
   flutter_launcher_icons:
-  assets_audio_player:
+  assets_audio_player: ^3.0.5
   image_fade:
-  cached_network_image: ^2.2.0+1
+  cached_network_image:
   flutter_blurhash:
   shared_preferences:
   flutter_tts:

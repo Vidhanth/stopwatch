@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'constants.dart';
 
@@ -77,28 +75,29 @@ class CustomButton extends StatelessWidget {
                 color: hasBorder ? borderColor : Colors.transparent,
                 width: hasBorder ? borderWidth : 0),
             color: color,
-            boxShadow: boxShadow ?? [
-              BoxShadow(
-                  blurRadius: 10,
-                  color: hasShadow ? Colors.black38 : Colors.transparent)
-            ],
+            boxShadow: boxShadow ??
+                [
+                  BoxShadow(
+                      blurRadius: 10,
+                      color: hasShadow ? Colors.black38 : Colors.transparent)
+                ],
             borderRadius: BorderRadius.circular(radius),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(radius),
-            child: FlatButton(
+            child: IconButton(
               highlightColor: highlightColor,
               splashColor: splashColor,
-              padding: EdgeInsets.zero,
               onPressed: isLoading ? null : onPressed,
-              child: Center(
+              icon: Center(
                 child: isLoading
                     ? spinner
-                    : child ?? Text(
-                  title,
-                  style:
-                  textStyle.copyWith(color: textColor, fontSize: textSize),
-                ),
+                    : child ??
+                        Text(
+                          title,
+                          style: textStyle.copyWith(
+                              color: textColor, fontSize: textSize),
+                        ),
               ),
             ),
           ),
